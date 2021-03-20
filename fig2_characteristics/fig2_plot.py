@@ -26,7 +26,7 @@ pl.rcParams['font.family'] = font_family
 pieargs = dict(startangle=90, counterclock=False, labeldistance=1.25)
 
 # Load the sim
-print('Loading... (takes ~5 s)')
+print('Loading data... (takes ~5 s)')
 sim = cv.load(simfile)
 tt = sim.results.transtree
 
