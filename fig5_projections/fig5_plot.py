@@ -36,7 +36,6 @@ msims = cv.load(msimsfile)
 refsim = msims[0].sims[0] # A reference simulation, any will do
 
 
-
 #%% Plotting
 
 fig = pl.figure(figsize=(22, 14))
@@ -72,6 +71,7 @@ xlims2 = refsim.day('2020-01-27', '2020-08-31')
 intervcolor = [1, 0.5, 0.05] # Was [0.1, 0.4, 0.1]
 scencolors = dict(actual=[0.12, 0.47, 0.71], high=[0.1, 0.4, 0.0])
 alpha = dict(actual=1.0, high=0.5)
+
 
 def sub(data, wind=2):
     ''' Subsample data '''
