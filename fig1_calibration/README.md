@@ -1,6 +1,6 @@
 # Fig. 1: Calibration of the model to data from Seattle-King County, Washington, from 271 JanuaryFebruary to 9 June 2020
 
-This folder contains the code for reproducing Fig. 1 of the manuscript. The files are as follows:
+This folder contains the code for reproducing Fig. 1 of the paper. The files are as follows:
 
 - `fig1_plot.py` -- the script file that generates the figure.
 - `cache_populations.py` -- generates the populations used by `create_sim.py`.

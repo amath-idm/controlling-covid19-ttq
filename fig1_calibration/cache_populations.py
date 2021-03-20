@@ -40,7 +40,7 @@ def cache_populations(seed=0, popfile=None):
 
 if __name__ == '__main__':
 
-    seeds = [0,1,2,3,4] # NB, each one takes 8 GB of RAM! -- split up 0-4 in pieces
+    seeds = [0,1,2,3,4] # NB, each one takes 1 GB of RAM!
     ram = psutil.virtual_memory().available/1e9
     required = pop_size/225e3*len(seeds)
     if required < ram:
