@@ -10,7 +10,7 @@ This assumes you have Anaconda or [Miniconda](https://docs.conda.io/en/latest/mi
 
 1. Clone this repository to the VM
 2. Create a new screen session: `screen -S ttq_app`
-3. Create a new Conda environment: `conda create -n ttq_app py=3.8`
+3. Create a new Conda environment: `conda create -n ttq_app python=3.8`
 4. Activate: `conda activate ttq_app`
 5. Install main dependencies with `pip install -e .[web]` in the main folder
 6. Edit `server_name` in `nginx_ttq` to match your local server
