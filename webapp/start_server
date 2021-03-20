@@ -1,0 +1,3 @@
+#!/bin/bash
+# Can supply additional arguments, e.g. ./start_server --debug
+voila Covid-TTQ.ipynb --no-browser "$@"
