@@ -9,7 +9,7 @@ This repository includes the code for reproducing the results in the manuscript 
 
 The repository is organized as follows:
 
-- `fig1` through `fig5` are the main folders containing the code for reproducing each figure of the manuscript.
+- `fig1` through `fig5` are the main folders containing the code for reproducing each figure of the manuscript. In each of these folders, there is a file called `figX_plot.py` which will generate the corresponding figure from the manuscript.
 - `inputs` and `outputs` are folders containing the input data and the model-based outputs, respctively.
 - `webapp` includes the code for serving the figures via an interactive webapp or Jupyter notebook.
 

@@ -114,7 +114,7 @@ def remove_ltcf_community(sim, debug=False):
 def test_num_subtarg(sim, sev=100.0, u20=0.5):
     ''' Subtarget severe people with more testing, and young people with less '''
     sev_inds = sim.people.true('severe')
-    u20_inds = sc.findinds(sim.people.age<20 * ~sim.people.severe) # People who are under 20 and severe test as if they're severe; * is element-wise "and"
+    u20_inds = sc.findinds((sim.people.age<20) * (~sim.people.severe)) # People who are under 20 and severe test as if they're severe; * is element-wise "and"
     u20_vals = u20*np.ones(len(u20_inds))
     sev_vals = sev*np.ones(len(sev_inds))
     inds = np.concatenate([u20_inds, sev_inds])

@@ -1,4 +1,4 @@
-# Fig. 1: Calibration of the model to data from Seattle-King County, Washington, from 271 JanuaryFebruary to 9 June 2020
+# Fig. 1: Calibration of the model to data from Seattle-King County, Washington, from 27 January to 9 June 2020
 
 This folder contains the code for reproducing Fig. 1 of the paper. The files are as follows:
 
