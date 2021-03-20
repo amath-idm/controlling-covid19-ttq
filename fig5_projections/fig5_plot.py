@@ -38,7 +38,7 @@ refsim = msims[0].sims[0] # A reference simulation, any will do
 
 #%% Plotting
 
-fig = pl.figure(figsize=(22, 14))
+fig = pl.figure(num='Fig. 5: Projections and validation', figsize=(22, 14))
 x1 = 0.07 # Panel and text locations
 x2 = 0.48
 y1 = 0.05

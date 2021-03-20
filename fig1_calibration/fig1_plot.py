@@ -136,7 +136,7 @@ sims = cv.load(simsfile)
 sim = sims[0] # For having a sim to refer to
 
 # Create the figure
-pl.figure(figsize=(24,20))
+pl.figure(num='Fig. 1: Calibration', figsize=(24,20))
 tx1, ty1 = 0.005, 0.97
 tx2, ty2 = 0.545, 0.66
 ty3      = 0.34

@@ -36,7 +36,7 @@ s = sc.objdict()
 t = sc.objdict()
 a = sc.objdict()
 
-fig = pl.figure(figsize=(24,14))
+fig = pl.figure(num='Fig. 3: Theoretical TTQ', figsize=(24,14))
 
 euclid = False
 ay0 = 0.06

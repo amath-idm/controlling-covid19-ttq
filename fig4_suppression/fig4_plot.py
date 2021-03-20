@@ -29,7 +29,7 @@ font_family = 'Proxima Nova'
 pl.rcParams['font.size'] = font_size
 pl.rcParams['font.family'] = font_family
 figw, figh = 24, 20
-fig = pl.figure(figsize=(figw, figh))
+fig = pl.figure(num='Fig. 4: Suppression scenarios', figsize=(figw, figh))
 
 rx   = 0.07
 r1y  = 0.74
