@@ -428,11 +428,11 @@ plot_intervs(sim)
 
 #%% Tidy up
 
-if do_show:
-    pl.show()
-
 if do_save:
     cv.savefig(fig_path, dpi=150)
+
+if do_show:
+    pl.show()
 
 
 # Calculate stats
