@@ -24,11 +24,9 @@ dffile2 = 'reopening_sweeps_sep28_final.df'
 T = sc.tic()
 
 # Figure configuration
-font_size = 22
-font_family = 'Proxima Nova'
-pl.rcParams['font.size'] = font_size
-pl.rcParams['font.family'] = font_family
+print('Creating figure...')
 figw, figh = 24, 20
+pl.rcParams['font.size'] = 20 # Set general figure options
 fig = pl.figure(num='Fig. 4: Suppression scenarios', figsize=(figw, figh))
 
 rx   = 0.07
@@ -59,6 +57,7 @@ pl.figtext(lx, r2y+r2dy+0.02, 'B', fontsize=40)
 
 
 #%% Top row: scatter plots
+print('Calculating slopes...')
 df1 = cv.load(dffile1)
 
 ykey = ['cum_infections', 'r_eff'][0] # r_eff just for debugging
@@ -291,6 +290,7 @@ for plotnum,key,label in df1map.enumitems():
 
 
 #%% Bottom row: surface plots
+print('Calculating surfaces...')
 
 df2 = cv.load(dffile2)
 

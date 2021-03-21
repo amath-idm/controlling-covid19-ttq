@@ -19,10 +19,7 @@ simfile = 'fig2.sim'  # File to load -- produced by fig2_run.py
 T = sc.tic()
 
 # Set general figure options
-font_size = 22
-font_family = 'Proxima Nova'
-pl.rcParams['font.size'] = font_size
-pl.rcParams['font.family'] = font_family
+pl.rcParams['font.size'] = 20
 pieargs = dict(startangle=90, counterclock=False, labeldistance=1.25)
 
 # Load the sim
@@ -31,7 +28,7 @@ sim = cv.load(simfile)
 tt = sim.results.transtree
 
 # Make the plots
-print('Plotting...')
+print('Creating figure...')
 fig = pl.figure(num='Fig. 2: Transmission dynamics', figsize=(20,14))
 piey, tsy, r3y = 0.68, 0.50, 0.07
 piedx, tsdx, r3dx = 0.2, 0.9, 0.25

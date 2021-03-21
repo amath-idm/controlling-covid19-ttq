@@ -30,12 +30,7 @@ scan_file = '../inputs/scanprev_5_21.csv'
 mismatch_cutoff = 30 # Exclude simulations with a worse mismatch value than this
 sims_cutoff = 9999 # Exclude sims with a higherindex than this
 day_stride = 21 # Plot ticks in 3-week intervals
-
-# Set general figure options
-font_size = 22
-font_family = 'Proxima Nova'
-pl.rcParams['font.size'] = font_size
-pl.rcParams['font.family'] = font_family
+pl.rcParams['font.size'] = 20 # Set general figure options
 
 
 #%% Helper functions
@@ -132,6 +127,7 @@ def plot_intervs(sim, labels=True):
 
 #%% Do the actual plotting
 
+print('Creating figure...')
 sims = cv.load(simsfile)
 sim = sims[0] # For having a sim to refer to
 

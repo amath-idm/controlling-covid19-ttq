@@ -8,14 +8,11 @@ import sciris as sc
 import pylab as pl
 import covasim as cv
 
+# General options
 do_save = 0
 do_show = 1
 fig_path = 'ttq_fig3_sep25.png'
-
-font_size = 22
-font_family = 'Proxima Nova'
-pl.rcParams['font.size'] = font_size
-pl.rcParams['font.family'] = font_family
+pl.rcParams['font.size'] = 20 # Set general figure options
 T = sc.tic()
 
 #%% Left hand side: transmission trees
@@ -36,6 +33,7 @@ s = sc.objdict()
 t = sc.objdict()
 a = sc.objdict()
 
+print('Creating figure...')
 fig = pl.figure(num='Fig. 3: Theoretical TTQ', figsize=(24,14))
 
 euclid = False
@@ -55,6 +53,7 @@ pl.figtext(axc-xoff, ady+yoff, 'C', fontsize=40)
 
 max_n = 0; ζ = {'↓':-2, '↑':10} # Configure plot zorder
 
+print('Processing trees...')
 for k in ['none', 'test', 'trace']:
     interventions = []
     if k in ['test', 'trace']:
@@ -263,6 +262,7 @@ scenkeys = ['beta', 'test', 'trace']
 n_seeds = 10
 simsfile = 'fig3.sims'
 
+print('Loading data...')
 sims = sc.objdict()
 simsobj = cv.load(simsfile)
 for sim in simsobj:

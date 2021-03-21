@@ -15,15 +15,11 @@ import covasim as cv
 do_save = 0
 do_show = 1
 fig_path = 'ttq_fig5_sep29.png'
-
-# Figure configuration
-font_size = 22
-font_family = 'Proxima Nova'
-pl.rcParams['font.size'] = font_size
-pl.rcParams['font.family'] = font_family
+pl.rcParams['font.size'] = 20 # Set general figure options
 T = sc.tic()
 
 # Load data
+print('Loading data...')
 msimsfile = 'fig5.msims'
 tsfn = './kc_data/20200614chop5_KingCounty_Covasim_extended.xlsx' # Time series data
 ctfn = './kc_data/contact_tracing.xlsx' # Contact tracing
@@ -37,6 +33,7 @@ refsim = msims[0].sims[0] # A reference simulation, any will do
 
 
 #%% Plotting
+print('Creating figure...')
 
 fig = pl.figure(num='Fig. 5: Projections and validation', figsize=(22, 14))
 x1 = 0.07 # Panel and text locations
