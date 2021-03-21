@@ -4,7 +4,7 @@ output from run_fig1a.py (this output is already saved to the repository).
 '''
 
 import numpy as np
-import pandas  as pd
+import pandas as pd
 import sciris as sc
 import datetime as dt
 import pylab as pl

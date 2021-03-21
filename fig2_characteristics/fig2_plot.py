@@ -3,10 +3,10 @@ Create Fig. 2 from "Controlling COVID-19 via test-trace-quarantine". Relies on
 output from run_fig2.py (this output is already saved to the repository).
 '''
 
-import matplotlib.dates as mdates
+import numpy as np
 import sciris as sc
 import pylab as pl
-import numpy as np
+import matplotlib.dates as mdates
 import covasim as cv
 
 #%% Settings

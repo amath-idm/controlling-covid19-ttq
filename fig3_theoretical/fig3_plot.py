@@ -4,8 +4,8 @@ output from run_fig3.py (this output is already saved to the repository).
 '''
 
 import numpy as np
-import pylab as pl
 import sciris as sc
+import pylab as pl
 import covasim as cv
 
 do_save = 0

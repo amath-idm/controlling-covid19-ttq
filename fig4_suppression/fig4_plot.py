@@ -4,11 +4,11 @@ output from analyze_scenarios.py (this output is already saved to the repository
 '''
 
 import numpy as np
+import sciris as sc
 import pylab as pl
 import matplotlib as mpl
-import sciris as sc
-import covasim as cv
 import statsmodels.api as sm
+import covasim as cv
 import create_sim as cs
 import run_scenarios as rs
 
