@@ -14,7 +14,7 @@ import covasim as cv
 # General settings
 do_save = 0
 do_show = 1
-fig_path = 'ttq_fig2_sep25.png'
+fig_path = 'ttq_fig2_mar20.png'
 simfile = 'fig2.sim'  # File to load -- produced by fig2_run.py
 T = sc.tic()
 
@@ -125,17 +125,18 @@ pie_ax2.text(0, 1.75, 'Transmissions by layer\nafter stay-at-home', style='itali
 #%% Fig. 2B -- histogram by overdispersion
 
 # Process targets
-n_targets = tt.count_targets()
+n_targets = tt.count_targets(end_day=mar12)
 
 # Handle bins
 max_infections = n_targets.max()
-bins = np.arange(0, max_infections+2)
+edges = np.arange(0, max_infections+2)
 
 # Analysis
-counts = np.histogram(n_targets, bins)[0]
-bins = bins[:-1] # Remove last bin since it's an edge
-total_counts = counts*bins
-total_counts = total_counts/total_counts.sum()*100
+counts = np.histogram(n_targets, edges)[0]
+bins = edges[:-1] # Remove last bin since it's an edge
+norm_counts = counts/counts.sum()
+raw_counts = counts*bins
+total_counts = raw_counts/raw_counts.sum()*100
 n_bins = len(bins)
 index = np.linspace(0, 100, len(n_targets))
 sorted_arr = np.sort(n_targets)
@@ -150,7 +151,7 @@ width = 1.0
 for i in range(n_bins):
     disp_ax.bar(bins[i], total_counts[i], width=width, facecolor=sscolors[i])
 disp_ax.set_xlabel('Number of transmissions per case')
-disp_ax.set_ylabel('Proportion of all transmissions (%)')
+disp_ax.set_ylabel('Proportion of transmissions (%)')
 sc.boxoff()
 disp_ax.set_xlim([0.5, 32.5])
 disp_ax.set_xticks(np.arange(0, 32.5, 4))
@@ -158,43 +159,47 @@ sc.boxoff(ax=disp_ax)
 
 dpie_ax = pl.axes([dispx+0.05, 0.20, 0.2, 0.2])
 trans1 = total_counts[1:3].sum()
-trans2 = total_counts[3:6].sum()
-trans3 = total_counts[6:].sum()
+trans2 = total_counts[3:5].sum()
+trans3 = total_counts[5:8].sum()
+trans4 = total_counts[8:].sum()
 labels = [
-    f'1-2: {trans1:0.0f}%',
-    f'3-5: {trans2:0.0f}%',
-    f'>5: {trans3:0.0f}%',
+    f'1-2:\n{trans1:0.0f}%',
+    f' 3-4:\n {trans2:0.0f}%',
+    f'5-7: \n{trans3:0.0f}%\n',
+    f'>7:  \n{trans4:0.0f}%\n',
     ]
-dpie_args = sc.mergedicts(pieargs, {'labeldistance':1.1}) # Slightly smaller label distance
-dpie_ax.pie([trans1, trans2, trans3], labels=labels, colors=sscolors[[0,3,6]], **dpie_args)
+dpie_args = sc.mergedicts(pieargs, dict(labeldistance=1.2)) # Slightly smaller label distance
+dpie_ax.pie([trans1, trans2, trans3, trans4], labels=labels, colors=sscolors[[0,4,7,12]], **dpie_args)
 
 
 #%% Fig. 2C -- cumulative distribution function
 
-index = 100 - index
-sorted_sum = 100 - sorted_sum
-change_inds = change_inds[::-1]
+rev_ind = 100 - index
+rev_sum = 100 - sorted_sum
+rev_change = change_inds[::-1]
 n_change_inds = len(change_inds)
+change_bins = bins[counts>0][1:]
 for i in range(n_change_inds):
+    ib = int(change_bins[i])
     ci = change_inds[i]
     ici = index[ci]
     sci = sorted_sum[ci]
+    color = sscolors[ib]
     if i>0:
         cim1 = change_inds[i-1]
         icim1 = index[cim1]
         scim1 = sorted_sum[cim1]
-        color = sscolors[n_change_inds-i-1]
-    else:
-        icim1 = 0
-        scim1 = 0
-        color = [0.2,0.2,0.2]
-    cum_ax.plot([icim1, ici], [scim1, sci], lw=4, c=color)
-    cum_ax.scatter([ici], [sci], s=150, zorder=50-i, c=[sscolors[n_change_inds-i-1]], edgecolor='w', linewidth=0.2)
+        cum_ax.plot([icim1, ici], [scim1, sci], lw=4, c=color)
+    cum_ax.scatter([ici], [sci], s=150, zorder=50-i, c=[color], edgecolor='w', linewidth=0.2)
+    if ib<=6 or ib in [8, 10, 25]:
+        xoff = 5 - 2*(ib==1) + 3*(ib>=10) + 1*(ib>=20)
+        yoff = 2*(ib==1)
+        cum_ax.text(ici-xoff, sci+yoff, ib, fontsize=18, color=color)
 cum_ax.set_xlabel('Proportion of primary infections (%)')
-cum_ax.set_ylabel('Proportion of secondary infections (%)    ')
+cum_ax.set_ylabel('Proportion of transmissions (%)')
 xmin = -2
 ymin = -2
-cum_ax.set_xlim([xmin, 100])
+cum_ax.set_xlim([xmin, 102])
 cum_ax.set_ylim([ymin, 102])
 sc.boxoff(ax=cum_ax)
 
@@ -203,17 +208,23 @@ ancol1 = [0.2, 0.2, 0.2]
 ancol2 = sscolors[0]
 ancol3 = sscolors[6]
 
-i01 = sc.findinds(sorted_sum==100)[-1]
-i20 = sc.findinds(sorted_sum>=80)[-1]
-i50 = sc.findinds(sorted_sum>=50)[-1]
-cum_ax.plot([index[i01], index[i01], 100], [ymin, 100, 100], '--', lw=2, c=ancol1)
-cum_ax.plot([xmin, index[i20], index[i20]], [80, 80, ymin], '--', lw=2, c=ancol2)
+i01 = sc.findlast(sorted_sum==0)
+i20 = sc.findlast(sorted_sum<=20)
+i50 = sc.findlast(sorted_sum<=50)
+cum_ax.plot([xmin, index[i01]], [0, 0], '--', lw=2, c=ancol1)
+cum_ax.plot([xmin, index[i20], index[i20]], [20, 20, ymin], '--', lw=2, c=ancol2)
 cum_ax.plot([xmin, index[i50], index[i50]], [50, 50, ymin], '--', lw=2, c=ancol3)
 
-bbox = dict(facecolor='w', alpha=0.9, lw=0)
-cum_ax.text(44, 85, f'{100-index[i01]:0.0f}% of infections\ndo not transmit', c=ancol1, bbox=bbox)
-cum_ax.text(25, 50, f'{index[i20]:0.0f}% of infections cause\n80% of transmissions', c=ancol2, bbox=bbox)
-cum_ax.text(14, 15, f'{index[i50]:0.0f}% of infections cause\n50% of transmissions', c=ancol3, bbox=bbox)
+# Compute mean number of transmissions for 80% and 50% thresholds
+q80 = sc.findfirst(np.cumsum(total_counts)>20) # Count corresponding to 80% of cumulative infections (100-80)
+q50 = sc.findfirst(np.cumsum(total_counts)>50) # Count corresponding to 50% of cumulative infections
+n80, n50 = [sum(bins[q:]*norm_counts[q:]/norm_counts[q:].sum()) for q in [q80, q50]]
+
+# Plot annotations
+kw = dict(bbox=dict(facecolor='w', alpha=0.9, lw=0), fontsize=20)
+cum_ax.text(2, 3, f'{index[i01]:0.0f}% of infections\ndo not transmit', c=ancol1, **kw)
+cum_ax.text(8, 23, f'{rev_ind[i20]:0.0f}% of infections cause\n80% of transmissions\n(mean: {n80:0.1f} per infection)', c=ancol2, **kw)
+cum_ax.text(14, 53, f'{rev_ind[i50]:0.0f}% of infections cause\n50% of transmissions\n(mean: {n50:0.1f} per infection)', c=ancol3, **kw)
 
 
 #%% Fig. 2D -- histogram by date of symptom onset
@@ -241,7 +252,7 @@ for _, target_ind in tt.transmissions:
 # Convert to an array
 days = list(symp_counts.keys())
 xax = np.arange(minind-1, maxind+1)
-counts = np.zeros(len(xax))
+sympcounts = np.zeros(len(xax))
 for i,val in symp_counts.items():
     if i<minind:
         ind = 0
@@ -249,20 +260,20 @@ for i,val in symp_counts.items():
         ind = -1
     else:
         ind = sc.findinds(xax==i)[0]
-    counts[ind] += val
+    sympcounts[ind] += val
 
 # Plot
-total_count = asymp_count + counts.sum()
-counts = counts/total_count*100
+total_count = asymp_count + sympcounts.sum()
+sympcounts = sympcounts/total_count*100
 presymp = sc.findinds(xax<=0)[-1]
 colors = ['#eed15b', '#ee943a', '#c3211a']
 
 asymp_frac = asymp_count/total_count*100
-pre_frac = counts[:presymp].sum()
-symp_frac = counts[presymp:].sum()
+pre_frac = sympcounts[:presymp].sum()
+symp_frac = sympcounts[presymp:].sum()
 symp_ax.bar(xax[0]-2, asymp_frac, label='Asymptomatic', color=colors[0])
-symp_ax.bar(xax[:presymp], counts[:presymp], label='Presymptomatic', color=colors[1])
-symp_ax.bar(xax[presymp:], counts[presymp:], label='Symptomatic', color=colors[2])
+symp_ax.bar(xax[:presymp], sympcounts[:presymp], label='Presymptomatic', color=colors[1])
+symp_ax.bar(xax[presymp:], sympcounts[presymp:], label='Symptomatic', color=colors[2])
 symp_ax.set_xlabel('Days since symptom onset')
 symp_ax.set_ylabel('Proportion of transmissions (%)')
 symp_ax.set_xticks([minind-3, 0, 5, 10, maxind])
@@ -270,8 +281,9 @@ symp_ax.set_xticklabels(['Asymp.', '0', '5', '10', f'>{maxind}'])
 sc.boxoff(ax=symp_ax)
 
 spie_ax = pl.axes([sympx+0.05, 0.20, 0.2, 0.2])
-labels = [f'Asymp-\ntomatic\n{asymp_frac:0.0f}%', f'Presymp-\ntomatic\n{pre_frac:0.0f}%', f'Symp-\ntomatic\n{symp_frac:0.0f}%']
+labels = [f'Asymp-\ntomatic\n{asymp_frac:0.0f}%', f' Presymp-\n tomatic\n {pre_frac:0.0f}%', f'Symp-\ntomatic\n{symp_frac:0.0f}%']
 spie_ax.pie([asymp_frac, pre_frac, symp_frac], labels=labels, colors=colors, **pieargs)
+
 
 
 #%% Tidy up
