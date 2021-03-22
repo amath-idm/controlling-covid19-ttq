@@ -19,6 +19,7 @@ simfile = 'fig2.sim'  # File to load -- produced by fig2_run.py
 T = sc.tic()
 
 # Set general figure options
+wf = 2 # Make web fonts smaller
 pl.rcParams['font.size'] = 20
 pieargs = dict(startangle=90, counterclock=False, labeldistance=1.25)
 
@@ -47,10 +48,11 @@ off = 0.06
 txtdispx, txtcumx, txtsympx = dispx-off, cumx-off, sympx-off+0.02
 tsytxt = tsy+tsdy
 r3ytxt = r3y+r3dy
-pl.figtext(txtdispx, tsytxt, 'A', fontsize=40)
-pl.figtext(txtdispx, r3ytxt, 'B', fontsize=40)
-pl.figtext(txtcumx, r3ytxt, 'C', fontsize=40)
-pl.figtext(txtsympx,  r3ytxt, 'D', fontsize=40)
+labelsize = 40-wf
+pl.figtext(txtdispx, tsytxt, 'A', fontsize=labelsize)
+pl.figtext(txtdispx, r3ytxt, 'B', fontsize=labelsize)
+pl.figtext(txtcumx,  r3ytxt, 'C', fontsize=labelsize)
+pl.figtext(txtsympx, r3ytxt, 'D', fontsize=labelsize)
 
 
 #%% Fig. 2A -- Time series plot
@@ -194,7 +196,7 @@ for i in range(n_change_inds):
     if ib<=6 or ib in [8, 10, 25]:
         xoff = 5 - 2*(ib==1) + 3*(ib>=10) + 1*(ib>=20)
         yoff = 2*(ib==1)
-        cum_ax.text(ici-xoff, sci+yoff, ib, fontsize=18, color=color)
+        cum_ax.text(ici-xoff, sci+yoff, ib, fontsize=18-wf, color=color)
 cum_ax.set_xlabel('Proportion of primary infections (%)')
 cum_ax.set_ylabel('Proportion of transmissions (%)')
 xmin = -2
@@ -221,7 +223,7 @@ q50 = sc.findfirst(np.cumsum(total_counts)>50) # Count corresponding to 50% of c
 n80, n50 = [sum(bins[q:]*norm_counts[q:]/norm_counts[q:].sum()) for q in [q80, q50]]
 
 # Plot annotations
-kw = dict(bbox=dict(facecolor='w', alpha=0.9, lw=0), fontsize=20)
+kw = dict(bbox=dict(facecolor='w', alpha=0.9, lw=0), fontsize=20-wf)
 cum_ax.text(2, 3, f'{index[i01]:0.0f}% of infections\ndo not transmit', c=ancol1, **kw)
 cum_ax.text(8, 23, f'{rev_ind[i20]:0.0f}% of infections cause\n80% of transmissions\n(mean: {n80:0.1f} per infection)', c=ancol2, **kw)
 cum_ax.text(14, 53, f'{rev_ind[i50]:0.0f}% of infections cause\n50% of transmissions\n(mean: {n50:0.1f} per infection)', c=ancol3, **kw)
