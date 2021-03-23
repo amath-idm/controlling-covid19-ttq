@@ -1,6 +1,6 @@
 '''
 Run the simulations used in Fig. 1. The file saved by this script is used by
-fig1_plot.py to generate the figure. Requires a JSON file produced by processing
+plot_fig1.py to generate the figure. Requires a JSON file produced by processing
 the results of run_optimization.py (included in the repository).
 
 Each simulation takes about 30 s to run. By default 200 simulations are run, so
@@ -21,7 +21,7 @@ do_plot = 0
 parallelize = 1
 n_sims = 200
 jsonfile = '../outputs/opt_merged_sep20_sg1.json' # Calibration results
-simsfile = 'fig1a_sims_sep20_sg1.sims' # Output file
+simsfile = 'fig1a.sims' # Output file
 
 json = sc.loadjson(jsonfile)
 

@@ -3,14 +3,18 @@ Run the optimization calibrating the model to data. Used to generate the paramet
 value JSON file which is then used by run_fig1a.py (this file is cached in the
 repository).
 
-Requires Optuna (http://optuna.org). Requires ~20,000 runs, each taking about 30 s,
-so running on an HPC or cluster is required.
+You must run cache_populations.py before running this file.
+
+Requires Optuna (http://optuna.org; pip install optuna). Requires ~100,000 trials,
+each taking about 30 s, so running on an HPC or cluster is required. By default,
+this script is set up for a local debugging run (48 trials). Warning: running with
+only a debugging run rather than a full run and then regenerating other results will
+produce extremely poor fits!
 '''
 
 import os
 import shutil as sh
 import sciris as sc
-import covasim as cv
 import optuna as op
 import create_sim as cs
 
@@ -72,15 +76,13 @@ def make_study(restart=False):
 
 if __name__ == '__main__':
 
-    cv.check_save_version('1.7.0', die=True)
+    restart   = 0 # Whether to restart a partially run optimization
+    do_plot   = 0 # Whether to plot the final results
+    local     = 1 # Flag for whether to run for local debugging rather than on an HPC
 
-    restart   = 0
-    do_plot   = 0
-    local     = 0 # Set whether to run locally -- just for testing
-
-    n_opt     = [10,2][local]
-    n_trials  = [150,3][local]
-    n_workers = [36,4][local]
+    n_opt     = [10, 2][local]  # Number of independent optimizations
+    n_trials  = [150,3][local] # Number of trials per worker
+    n_workers = [36, 4][local]  # Number of workers -- total trials is 2*n_opt*n_trials*n_workers = 108,000 by default
 
     try:
         sh.rmtree('./progress/', ignore_errors=True)
@@ -88,7 +90,7 @@ if __name__ == '__main__':
     except Exception as E:
         print(f'Could not make progress folder: {E}')
 
-    for use_safegraph in [0]:
+    for use_safegraph in [0,1]: # Run with and wthout SafeGraph data
         for opt in range(n_opt):
             name      = 'covasim_ttq'
             storage   = f'sqlite:///opt_rnr_sg{use_safegraph}_v{opt}.db'

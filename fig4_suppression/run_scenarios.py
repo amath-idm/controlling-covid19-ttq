@@ -1,7 +1,7 @@
 '''
 Run the simulations for Fig. 4A (sensitivity scenarios) and Fig. 4B (reopening
 sweeps). After running this script, run analyze_scenarios.py to parse into the
-format used by fig4_plot.py.
+format used by plot_fig4.py.
 
 To choose, change 'which'. You might also want to update the filenames with dates
 in them.
@@ -24,7 +24,7 @@ if len(sys.argv)>1:
     which = sys.argv[1]
 randomize = True # False is not implemented yet
 
-jsonfile = '../outputs/opt_merged_sep20_sg1.json' # Old: '../outputs/opt_jun20_sg1.json'
+jsonfile = '../outputs/opt_merged_sep20_sg1.json'
 doplot = 0
 ncpus = 36
 start_seed = 0

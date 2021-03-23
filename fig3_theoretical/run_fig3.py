@@ -1,6 +1,6 @@
 '''
 Run the simulations used in Fig. 3E-F. The file saved by this script is used by
-fig3_plot.py to generate the figure.
+plot_fig3.py to generate the figure.
 
 The simulations take about 5 min to run.
 '''

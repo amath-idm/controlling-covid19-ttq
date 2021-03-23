@@ -11,18 +11,18 @@ A webapp with an interactive version of the figures is available at http://ttq-a
 
 The repository is organized as follows:
 
-- `fig1` through `fig5` are the main folders containing the code for reproducing each figure of the manuscript. In each of these folders, there is a file called `figX_plot.py` which will generate the corresponding figure from the manuscript.
-- `inputs` and `outputs` are folders containing the input data and the model-based outputs, respctively.
-- `webapp` includes the code for serving the figures via an interactive webapp or Jupyter notebook.
+- `fig1` through `fig5` are the main folders containing the code for reproducing each figure of the manuscript. In each of these folders, there is a file called `plot_figX.py` that will generate the corresponding figure from the manuscript. These scripts can be run directly, without the need to re-run the scripts for generating the underlying data (some of which take considerable CPU time). These are the scripts that are being run by the webapp.
+- `inputs` and `outputs` are folders containing the input data and the model-based outputs, respectively.
+- `webapp` includes the code for serving the figures via the interactive [webapp](http://ttq-app.covasim.org) or a local Jupyter notebook.
 
 
 ## Installation
 
-To install dependencies, use `pip install -e .`, then run the scripts in the figure folders. Alternatively, run `pip install -e .[web]` and run the notebook/webapp in the `webapp` folder. 
+Use `pip install -e .` to install dependencies, then run the scripts in the figure folders. Alternatively, run `pip install -e .[web]`, which will also let you run the notebook/webapp in the `webapp` folder. 
 
-Note: installation is intended for Ubuntu 18.04/20.04 using a Python 3.8 [conda](https://www.anaconda.com/products/individual) virtual environment. Other platforms or environments may work, but they have not been extensively tested.
+Note: installation is intended for Ubuntu 18.04/20.04 using a Python 3.8 [conda](https://www.anaconda.com/products/individual) virtual environment. Other platforms or environments may work with minor modifications to the scripts, but they have not been extensively tested.
 
 
 ## Further information
 
-If you have further questions or would like technical assistance, please reach out to us at covasim@idmod.org.
+Further information on Covasim is available [here](http://docs.covasim.org). If you have further questions or would like technical assistance, please reach out to us at covasim@idmod.org.

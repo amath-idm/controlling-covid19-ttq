@@ -2,7 +2,7 @@
 
 This folder contains the code for reproducing Fig. 4 of the paper. The files are as follows:
 
-- `fig4_plot.py` -- the script file that generates the figure.
+- `plot_fig4.py` -- the script file that generates the figure.
 - `create_sim.py` -- configures the simulation for `run_scenarios.py`.
 - `run_scenarios.py` -- runs the simulations for Fig. 4.
 - `analyze_scenarios.py` -- analyzes and parses simulations.

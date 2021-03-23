@@ -18,10 +18,10 @@ import covasim as cv
 # General settings
 do_save = 0
 do_show = 1
-fig_path = 'ttq_fig1_sep27.png'
+fig_path = 'ttq_fig1.png'
 
 # Figure data settings
-simsfile = 'fig1a_sims_sep20_sg1.sims'
+simsfile = 'fig1a.sims'
 datafiles = sc.objdict()
 datafiles.sg  = '../outputs/opt_merged_sep20_sg1.json'
 datafiles.nsg = '../outputs/opt_merged_sep20_sg0.json'

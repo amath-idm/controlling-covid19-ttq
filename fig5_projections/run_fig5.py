@@ -1,6 +1,6 @@
 '''
 Run the simulations used in Fig. 5. The file saved by this script is used by
-fig5_plot.py to generate the figure.
+plot_fig5.py to generate the figure.
 
 The simulations take about 5 min to run.
 '''
@@ -15,7 +15,7 @@ ncpus      = min(len(indices), 5)
 do_plot    = 0
 do_save    = 1
 from_cache = 1
-msimsfile  = 'fig5_runs_sep28_final.msims'
+msimsfile  = 'fig5.msims'
 T = sc.tic()
 
 # Set base parameters

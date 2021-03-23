@@ -1,7 +1,7 @@
 '''
 Analyze the output of run_scenarios.py and convert to dataframes. This script
 requires the output of run_scenarios.py, and the output of this script is used
-by fig4_plot.py.
+by plot_fig4.py.
 '''
 
 import pandas as pd

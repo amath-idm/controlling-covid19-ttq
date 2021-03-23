@@ -1,5 +1,6 @@
 '''
-Pre-generate the population. Takes about 70 s. 
+Pre-generate the population. Takes about 70 s per population (which
+is parallelized by default). 
 
 Requires SynthPops, which must be installed from the repository:
 
@@ -11,10 +12,12 @@ import sciris  as sc
 import covasim as cv
 import synthpops as sp
 sp.config.set_nbrackets(20) # Essential for getting the age distribution right
-sp.logger.setLevel('DEBUG')
+sp.logger.setLevel('DEBUG') # Show additional information during population creation
 
-
-pop_size = 225e3
+# Settings
+pop_size = 225e3 # 10% of the King County population
+inputs   = '../inputs'
+popfile_stem = f'{inputs}/kc_rnr_seed' # Stands for "King County revised new run random seed"
 
 def cache_populations(seed=0, popfile=None):
     ''' Pre-generate the synthpops population '''
@@ -26,7 +29,7 @@ def cache_populations(seed=0, popfile=None):
     )
 
     if popfile is None:
-        popfile = f'inputs/kc225_rnr_seed{pars.rand_seed}.ppl'
+        popfile = f'{popfile_stem}{pars.rand_seed}.ppl'
 
     T = sc.tic()
     print(f'Making "{popfile}"...')

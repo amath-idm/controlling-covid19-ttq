@@ -1,12 +1,12 @@
 '''
 Create the calibrated sim for the King County results. Used by run_fig2.py. Nearly
-identical to create_sim.py for Fig. 1.
+identical to create_sim.py for Fig. 1, except using the full 2.25 million population
+size to ensure that the full transmission tree is being calculated accurately.
 
-Note: this script relies the population files created by cache_population.py, as
-well as several CSV data files.
+Note: this script relies the population files created by running cache_population.py
+in this folder, as well as several CSV data files.
 '''
 
-# Standard packages
 import os
 import numpy as np
 import pandas as pd
@@ -19,7 +19,7 @@ inputs         = '../inputs'
 epi_data_file  = f'{inputs}/20200614chop5_KingCounty_Covasim.csv'
 age_data_file  = f'{inputs}/20200614chop5_KingCounty_AgeHist.csv'
 safegraph_file = f'{inputs}/KC_weeklyinteractions_20200811_trim.csv'
-popfile_stem   = f'{inputs}/kc_rnr_seed'
+popfile_stem   = f'{inputs}/kc_big_seed'
 
 
 # Generate the population filename
