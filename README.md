@@ -11,7 +11,7 @@ A webapp with an interactive version of the figures is available at http://ttq-a
 
 The repository is organized as follows:
 
-- `fig1` through `fig5` are the main folders containing the code for reproducing each figure of the manuscript. In each of these folders, there is a file called `plot_figX.py` that will generate the corresponding figure from the manuscript. These scripts can be run directly, without the need to re-run the scripts for generating the underlying data (some of which take considerable CPU time). These are the scripts that are being run by the webapp.
+- `fig1_calibration` through `fig5_projections` are the main folders containing the code for reproducing each figure of the manuscript. In each of these folders, there is a file called `plot_figX.py` that will generate the corresponding figure from the manuscript. These scripts can be run directly, without the need to re-run the scripts for generating the underlying data (some of which take considerable CPU time). These are the scripts that are being run by the webapp.
 - `inputs` and `outputs` are folders containing the input data and the model-based outputs, respectively.
 - `webapp` includes the code for serving the figures via the interactive [webapp](http://ttq-app.covasim.org) or a local Jupyter notebook.
 
