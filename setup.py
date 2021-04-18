@@ -17,7 +17,7 @@ CLASSIFIERS = [
 
 setup(
     name="controlling_covid19_ttq",
-    version="1.0.0",
+    version="1.2.0",
     author="Cliff Kerr, Dina Mistry, Robyn Stuart, Daniel Klein, et al., on behalf of the IDM COVID-19 Response Team",
     author_email="covasim@idmod.org",
     description="Code for the 'Controlling COVID-19 via test-trace-quarantine' paper",
