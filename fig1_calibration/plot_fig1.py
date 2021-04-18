@@ -56,7 +56,7 @@ def plotter(key, sims, ax, ys=None, calib=False, label='', ylabel='', low_q=0.02
 
     which = key.split('_')[1]
     try:
-        color = cv.get_colors()[which]
+        color = cv.get_default_colors()[which]
     except:
         color = [0.5,0.5,0.5]
     if which == 'deaths':
@@ -86,9 +86,9 @@ def plotter(key, sims, ax, ys=None, calib=False, label='', ylabel='', low_q=0.02
     end = None
     if flabel:
         if which == 'infections':
-            fill_label = '95% projec-\nted interval'
+            fill_label = '95% predic-\ntion interval'
         else:
-            fill_label = '95% projected\ninterval'
+            fill_label = '95% prediction\ninterval'
     else:
         fill_label = None
 
@@ -185,8 +185,8 @@ for hists in agehists:
 mposarr = np.array(mposlist)
 mdeatharr = np.array(mdeathlist)
 
-low_q = 0.1
-high_q = 0.9
+low_q = 0.025
+high_q = 0.975
 mpbest = pl.median(mposarr, axis=0)
 mplow  = pl.quantile(mposarr, q=low_q, axis=0)
 mphigh = pl.quantile(mposarr, q=high_q, axis=0)
@@ -199,7 +199,7 @@ off = 2
 bins = x.tolist() + [100]
 
 # Insets
-x0s, y0s, dxs, dys = 0.105, 0.84, 0.17, 0.13
+x0s, y0s, dxs, dys = 0.11, 0.84, 0.17, 0.13
 ax1s = pl.axes([x0s, y0s, dxs, dys])
 c1 = [0.3,0.3,0.6]
 c2 = [0.6,0.7,0.9]
