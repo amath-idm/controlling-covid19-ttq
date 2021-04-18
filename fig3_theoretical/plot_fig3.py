@@ -1,6 +1,7 @@
 '''
 Create Fig. 3 from "Controlling COVID-19 via test-trace-quarantine". Relies on
-output from run_fig3.py (this output is already saved to the repository).
+output from run_fig3a.py and run_fig3b.py (these outputs are already saved to the
+repository).
 '''
 
 import numpy as np
@@ -12,25 +13,14 @@ import covasim as cv
 do_save = 0
 do_show = 1
 fig_path = 'ttq_fig3_sep25.png'
+tt_filename = 'fig3_transtrees.obj'
 pl.rcParams['font.size'] = 20 # Set general figure options
 T = sc.tic()
 
+
 #%% Left hand side: transmission trees
 
-iday = 20 # Day interventions begin
-p = sc.objdict(
-    pop_size = 100,
-    n_days = 125,
-    pop_type = 'hybrid',
-    pop_infected = 1,
-    rand_seed = 8, # For the tree, select a random seed where the epidemic doesn't immediately die out
-    verbose = 0,
-    iso_factor  = dict(h=0.3, s=0.0, w=0.0, c=0.1),
-    quar_factor = dict(h=0.8, s=0.0, w=0.0, c=0.3),
-)
-
-s = sc.objdict()
-t = sc.objdict()
+p,s,t = cv.load(tt_filename) # Load saved data
 a = sc.objdict()
 
 print('Creating figure...')
@@ -47,35 +37,27 @@ a['trace'] = pl.axes([axc, ay0, adx, ady])
 
 xoff = 0.02
 yoff = 0.05
-pl.figtext(axa-xoff, ady+yoff, 'A', fontsize=40)
-pl.figtext(axb-xoff, ady+yoff, 'B', fontsize=40)
-pl.figtext(axc-xoff, ady+yoff, 'C', fontsize=40)
+pl.figtext(axa-xoff, ady+yoff, 'a', fontsize=40)
+pl.figtext(axb-xoff, ady+yoff, 'b', fontsize=40)
+pl.figtext(axc-xoff, ady+yoff, 'c', fontsize=40)
 
 max_n = 0; ζ = {'↓':-2, '↑':10} # Configure plot zorder
 
 print('Processing trees...')
 for k in ['none', 'test', 'trace']:
-    interventions = []
-    if k in ['test', 'trace']:
-        interventions += [cv.test_prob(start_day=iday, symp_prob=0.15, symp_quar_prob=1.0, asymp_quar_prob=1.0, quar_policy='start')]
-    if k in ['trace']:
-        interventions += [cv.contact_tracing(start_day=iday, trace_probs=dict(h=0.7, s=0.1, w=0.1, c=0.0))]
-
-    s[k] = cv.Sim(p, interventions=interventions)
-    s[k].run()
-    t[k] = s[k].make_transtree()
     tt = t[k]
     max_n = max(max_n, len(tt.infection_log))
 
     # Get the history of each chain
     hist = [None]*p.pop_size
-    for i,entry in enumerate(tt.detailed):
-        if entry:
+    detailed = tt.detailed.to_dict('records')
+    for i,entry in enumerate(detailed):
+        if ~np.isnan(entry['target']):
             hist[i] = [i]
             source = entry['source']
-            while source is not None:
+            while ~np.isnan(source):
                 hist[i].insert(0, source)
-                source = tt.detailed[source]['source']
+                source = detailed[int(source)]['source']
 
     # Figure out order
     histstrs = []
@@ -85,7 +67,7 @@ for k in ['none', 'test', 'trace']:
             histstrs.append(string)
     iorder = np.arange(p.pop_size)
     inf_inds = cv.false(s[k].people.susceptible)
-    iorder[inf_inds] = inf_inds[np.argsort(np.argsort(histstrs))] # 🤔🙈
+    iorder[inf_inds] = inf_inds[np.argsort(np.argsort(histstrs))] # This actually works 🤔🙈
     min_inf_ind = inf_inds.min()
     min_ind_ind = sc.findinds(iorder==min_inf_ind)[0]
     orig_0_ind = sc.findinds(iorder==0)[0]
@@ -101,8 +83,8 @@ for k in ['none', 'test', 'trace']:
     quar_color2 = '#b3ceff'
 
     # Construct each frame of the animation
-    for ddict in tt.detailed:  # Loop over every person
-        if ddict is None:
+    for ddict in detailed:  # Loop over every person
+        if np.isnan(ddict['target']):
             continue # Skip the 'None' node corresponding to seeded infections
 
         frame = {}
@@ -112,18 +94,17 @@ for k in ['none', 'test', 'trace']:
         if not np.isnan(ddict['date']): # If this person was infected
             source_ind = ddict['source'] # Index of the person who infected the target
             target_date = ddict['date']
-            if source_ind is not None:  # Seed infections and importations won't have a source
-                source_date = tt.detailed[source_ind]['date']
+            if ~np.isnan(source_ind):  # Seed infections and importations won't have a source
+                source_date = detailed[int(source_ind)]['date']
             else:
                 source_ind = target_ind
                 source_date = 0
 
             # Construct this frame
-            frame['x'] = [source_date, target_date]
-            frame['y'] = [source_ind, target_ind]
-            tdict = ddict['t']
-            is_quar = not np.isnan(tdict['date_quarantined'])
-            is_diag = not np.isnan(tdict['date_diagnosed'])
+            frame['x'] = [int(source_date), int(target_date)]
+            frame['y'] = [int(source_ind), int(target_ind)]
+            is_quar = ~np.isnan(ddict['trg_date_quarantined'])
+            is_diag = ~np.isnan(ddict['trg_date_diagnosed'])
             frame['c'] = inf_color
             frames[int(target_date)].append(frame)
 
@@ -250,9 +231,9 @@ a['low']  = pl.axes([axx, ayb, adx, ady])
 a['high'] = pl.axes([axx, ayc, adx, ady])
 xoff = 0.05
 yoff = 0.26
-pl.figtext(axx-xoff, aya+yoff, 'D', fontsize=40)
-pl.figtext(axx-xoff, ayb+yoff, 'E', fontsize=40)
-pl.figtext(axx-xoff, ayc+yoff, 'F', fontsize=40)
+pl.figtext(axx-xoff, aya+yoff, 'd', fontsize=40)
+pl.figtext(axx-xoff, ayb+yoff, 'e', fontsize=40)
+pl.figtext(axx-xoff, ayc+yoff, 'f', fontsize=40)
 
 
 # Configure

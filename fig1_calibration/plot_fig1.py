@@ -137,12 +137,12 @@ tx1, ty1 = 0.005, 0.97
 tx2, ty2 = 0.545, 0.66
 ty3      = 0.34
 fsize = 40
-pl.figtext(tx1, ty1, 'A', fontsize=fsize)
-pl.figtext(tx1, ty2, 'B', fontsize=fsize)
-pl.figtext(tx2, ty1, 'C', fontsize=fsize)
-pl.figtext(tx2, ty2, 'D', fontsize=fsize)
-pl.figtext(tx1, ty3, 'E', fontsize=fsize)
-pl.figtext(tx2, ty3, 'F', fontsize=fsize)
+pl.figtext(tx1, ty1, 'a', fontsize=fsize)
+pl.figtext(tx1, ty2, 'b', fontsize=fsize)
+pl.figtext(tx2, ty1, 'c', fontsize=fsize)
+pl.figtext(tx2, ty2, 'd', fontsize=fsize)
+pl.figtext(tx1, ty3, 'e', fontsize=fsize)
+pl.figtext(tx2, ty3, 'f', fontsize=fsize)
 
 
 #%% Fig. 1A: diagnoses

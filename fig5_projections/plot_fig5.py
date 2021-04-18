@@ -14,7 +14,7 @@ import covasim as cv
 # General settings
 do_save = 0
 do_show = 1
-fig_path = 'ttq_fig5_sep29.png'
+fig_path = 'ttq_fig5.png'
 pl.rcParams['font.size'] = 20 # Set general figure options
 T = sc.tic()
 
@@ -54,10 +54,10 @@ tx1 = -0.06
 tx2 = -0.04
 ty1 = 0.40
 ty2 = 0.41
-pl.figtext(x1+tx1, y2+ty2, 'A', fontsize=fsize)
-pl.figtext(x1+tx1, y1+ty1, 'B', fontsize=fsize)
-pl.figtext(x2+tx2, y2+ty2, 'C', fontsize=fsize)
-pl.figtext(x2+tx2, y1+ty1, 'D', fontsize=fsize)
+pl.figtext(x1+tx1, y2+ty2, 'a', fontsize=fsize)
+pl.figtext(x1+tx1, y1+ty1, 'b', fontsize=fsize)
+pl.figtext(x2+tx2, y2+ty2, 'c', fontsize=fsize)
+pl.figtext(x2+tx2, y1+ty1, 'd', fontsize=fsize)
 
 scargs = dict(color='k', marker='d', linestyle='none', alpha=0.5, markersize=10, lw=3)
 plargs = dict(lw=4)

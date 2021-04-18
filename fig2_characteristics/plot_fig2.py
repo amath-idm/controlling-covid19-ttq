@@ -14,7 +14,7 @@ import covasim as cv
 # General settings
 do_save = 0
 do_show = 1
-fig_path = 'ttq_fig2_mar20.png'
+fig_path = 'ttq_fig2.png'
 simfile = 'fig2.sim'  # File to load -- produced by fig2_run.py
 T = sc.tic()
 
@@ -49,10 +49,10 @@ txtdispx, txtcumx, txtsympx = dispx-off, cumx-off, sympx-off+0.02
 tsytxt = tsy+tsdy
 r3ytxt = r3y+r3dy
 labelsize = 40-wf
-pl.figtext(txtdispx, tsytxt, 'A', fontsize=labelsize)
-pl.figtext(txtdispx, r3ytxt, 'B', fontsize=labelsize)
-pl.figtext(txtcumx,  r3ytxt, 'C', fontsize=labelsize)
-pl.figtext(txtsympx, r3ytxt, 'D', fontsize=labelsize)
+pl.figtext(txtdispx, tsytxt, 'a', fontsize=labelsize)
+pl.figtext(txtdispx, r3ytxt, 'b', fontsize=labelsize)
+pl.figtext(txtcumx,  r3ytxt, 'c', fontsize=labelsize)
+pl.figtext(txtsympx, r3ytxt, 'd', fontsize=labelsize)
 
 
 #%% Fig. 2A -- Time series plot
@@ -63,7 +63,7 @@ n_layers = len(layer_keys)
 colors = sc.gridcolors(n_layers)
 
 layer_counts = np.zeros((sim.npts, n_layers))
-for source_ind, target_ind in tt.transmissions:
+for source_ind, target_ind in tt.count_transmissions():
     dd = tt.detailed[target_ind]
     date = dd['date']
     layer_num = layer_mapping[dd['layer']]

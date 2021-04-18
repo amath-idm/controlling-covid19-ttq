@@ -17,7 +17,7 @@ import run_scenarios as rs
 # Basic setup
 do_save = 0
 do_show = 1
-fig_path = 'ttq_fig4_oct02.png'
+fig_path = 'ttq_fig4.png'
 dffile1 = 'sensitivity_scenarios_sep28_final.df'
 dffile2 = 'reopening_sweeps_sep28_final.df'
 
@@ -52,8 +52,8 @@ cax = pl.axes([0.96, r2y, 0.01, r2dy])
 # Labels
 lx = 0.015
 yoff = 0.03
-pl.figtext(lx, r1y+r1dy+0.02, 'A', fontsize=40)
-pl.figtext(lx, r2y+r2dy+0.02, 'B', fontsize=40)
+pl.figtext(lx, r1y+r1dy+0.02, 'a', fontsize=40)
+pl.figtext(lx, r2y+r2dy+0.02, 'b', fontsize=40)
 
 
 #%% Top row: scatter plots
