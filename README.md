@@ -2,7 +2,7 @@
 
 This repository includes the code for reproducing the results in the manuscript "Controlling COVID-19 via testing, tracing, and quarantine". The citation for the manuscript is:
 
-> **Controlling COVID-19 via test-trace-quarantine**. Kerr CC, Mistry D, Stuart RM, Rosenfeld R, Hart G, Núñez RC, Selvaraj P, Cohen JA, Abeysuriya RG, George L, Hagedorn B, Jastrzębski M, Fagalde M, Duchin J, Famulare M, Klein DJ. *Nature Communications*, in press. doi: https://doi.org/10.1101/2020.07.15.20154765.
+> **Controlling COVID-19 via test-trace-quarantine**. Kerr CC, Mistry D, Stuart RM, Rosenfeld R, Hart G, Núñez RC, Selvaraj P, Cohen JA, Abeysuriya RG, George L, Hagedorn B, Jastrzębski M, Fagalde M, Duchin J, Famulare M, Klein DJ. *Nature Communications* 2021 12:2993. doi: https://doi.org/10.1038/s41467-021-23276-9.
 
 A webapp with an interactive version of the figures is available at http://ttq-app.covasim.org.
 
