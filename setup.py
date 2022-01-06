@@ -4,6 +4,10 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+# Get the requirements
+with open('requirements_frozen.txt') as f: required_frozen = f.read().splitlines()
+with open('requirements_web.txt')    as f: required_web    = f.read().splitlines()
+
 CLASSIFIERS = [
     "Environment :: Console",
     "Intended Audience :: Science/Research",
@@ -17,9 +21,9 @@ CLASSIFIERS = [
 
 setup(
     name="controlling_covid19_ttq",
-    version="1.2.0",
+    version="1.2.1",
     author="Cliff Kerr, Dina Mistry, Robyn Stuart, Daniel Klein, et al., on behalf of the IDM COVID-19 Response Team",
-    author_email="covasim@idmod.org",
+    author_email="info@covasim.org",
     description="Code for the 'Controlling COVID-19 via test-trace-quarantine' paper",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -39,12 +43,7 @@ setup(
         "covasim",
     ],
     extras_require={
-        "web":  [
-            "jupyter",
-            "jupyterlab",
-            "jupyterhub",
-            "ipympl",
-            "voila",
-            ],
+        "frozen": required_frozen,
+        "web":    required_web,
     }
 )
