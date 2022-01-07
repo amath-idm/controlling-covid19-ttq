@@ -16,13 +16,18 @@ The repository is organized as follows:
 - `webapp` includes the code for serving the figures via the interactive [webapp](http://ttq-app.covasim.org) or a local Jupyter notebook.
 
 
-## Installation
+## Installation and usage
 
-Use `pip install -e .` to install dependencies, then run the scripts in the figure folders. Alternatively, run `pip install -e .[web]`, which will also let you run the notebook/webapp in the `webapp` folder. 
+Use `pip install -e .` to install basic dependencies. This will install the latest version of each library (including Covasim). You can also install with `pip install -e .[frozen]` to use the versions of libraries (including Covasim) that were used for the paper. You can also install with `pip install -e .[web]`, which will also let you run the notebook/webapp in the `webapp` folder. 
 
 Note: installation is intended for Ubuntu 18.04/20.04 using a Python 3.8 [conda](https://www.anaconda.com/products/individual) virtual environment. Other platforms or environments may work with minor modifications to the scripts, but they have not been extensively tested.
 
 
+## Usage
+
+Run the scripts in the figure folders (see the readme in each folder for more information), or start the webapp and browse the figures there.
+
+
 ## Further information
 
-Further information on Covasim is available [here](http://docs.covasim.org). If you have further questions or would like technical assistance, please reach out to us at covasim@idmod.org.
+Further information on Covasim is available [here](http://docs.covasim.org). If you have further questions or would like technical assistance, please reach out to us at info@covasim.org.

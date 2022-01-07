@@ -1,3 +1,8 @@
 #!/bin/bash
 # Can supply additional arguments, e.g. ./start_server --debug
-voila Covid-TTQ.ipynb --no-browser --show_tracebacks=True --MappingKernelManager.cull_interval=120 --MappingKernelManager.cull_idle_timeout=600 "$@"
+voila Covid-TTQ.ipynb \
+    --no-browser \
+    --show_tracebacks=True \
+    --MappingKernelManager.cull_interval=120 \
+    --MappingKernelManager.cull_idle_timeout=600 \
+    "$@"

@@ -124,149 +124,7 @@ def plot_intervs(sim, labels=True):
     return
 
 
-
-#%% Do the actual plotting
-
-print('Creating figure...')
-sims = cv.load(simsfile)
-sim = sims[0] # For having a sim to refer to
-
-# Create the figure
-pl.figure(num='Fig. 1: Calibration', figsize=(24,20))
-tx1, ty1 = 0.005, 0.97
-tx2, ty2 = 0.545, 0.66
-ty3      = 0.34
-fsize = 40
-pl.figtext(tx1, ty1, 'a', fontsize=fsize)
-pl.figtext(tx1, ty2, 'b', fontsize=fsize)
-pl.figtext(tx2, ty1, 'c', fontsize=fsize)
-pl.figtext(tx2, ty2, 'd', fontsize=fsize)
-pl.figtext(tx1, ty3, 'e', fontsize=fsize)
-pl.figtext(tx2, ty3, 'f', fontsize=fsize)
-
-
-#%% Fig. 1A: diagnoses
-x0, y0, dx, dy = 0.055, 0.73, 0.47, 0.24
-ax1 = pl.axes([x0, y0, dx, dy])
-format_ax(ax1, sim)
-plotter('cum_diagnoses', sims, ax1, calib=True, label='Model', ylabel='Cumulative diagnoses')
-pl.legend(loc='lower right', frameon=False)
-
-
-#%% Fig. 1B: deaths
-y0b = 0.42
-ax2 = pl.axes([x0, y0b, dx, dy])
-format_ax(ax2, sim)
-plotter('cum_deaths', sims, ax2, calib=True, label='Model', ylabel='Cumulative deaths')
-pl.legend(loc='lower right', frameon=False)
-
-
-#%% Fig. 1A-B inserts (histograms)
-
-agehists = []
-
-for s,sim in enumerate(sims):
-    agehist = sim['analyzers'][0]
-    if s == 0:
-        age_data = agehist.data
-    agehists.append(agehist.hists[-1])
-
-# Observed data
-x = age_data['age'].values
-pos = age_data['cum_diagnoses'].values
-death = age_data['cum_deaths'].values
-
-# Model outputs
-mposlist = []
-mdeathlist = []
-for hists in agehists:
-    mposlist.append(hists['diagnosed'])
-    mdeathlist.append(hists['dead'])
-mposarr = np.array(mposlist)
-mdeatharr = np.array(mdeathlist)
-
-low_q = 0.025
-high_q = 0.975
-mpbest = pl.median(mposarr, axis=0)
-mplow  = pl.quantile(mposarr, q=low_q, axis=0)
-mphigh = pl.quantile(mposarr, q=high_q, axis=0)
-mdbest = pl.median(mdeatharr, axis=0)
-mdlow  = pl.quantile(mdeatharr, q=low_q, axis=0)
-mdhigh = pl.quantile(mdeatharr, q=high_q, axis=0)
-
-w = 4
-off = 2
-bins = x.tolist() + [100]
-
-# Insets
-x0s, y0s, dxs, dys = 0.11, 0.84, 0.17, 0.13
-ax1s = pl.axes([x0s, y0s, dxs, dys])
-c1 = [0.3,0.3,0.6]
-c2 = [0.6,0.7,0.9]
-xx = x+w-off
-pl.bar(x-off,pos, width=w, label='Data', facecolor=c1)
-pl.bar(xx, mpbest, width=w, label='Model', facecolor=c2)
-for i,ix in enumerate(xx):
-    pl.plot([ix,ix], [mplow[i], mphigh[i]], c='k')
-ax1s.set_xticks(np.arange(0,81,20))
-pl.xlabel('Age')
-pl.ylabel('Cases')
-sc.boxoff(ax1s)
-pl.legend(frameon=False, bbox_to_anchor=(0.7,1.1))
-
-y0sb = 0.53
-ax2s = pl.axes([x0s, y0sb, dxs, dys])
-c1 = [0.5,0.0,0.0]
-c2 = [0.9,0.4,0.3]
-pl.bar(x-off,death, width=w, label='Data', facecolor=c1)
-pl.bar(x+w-off, mdbest, width=w, label='Model', facecolor=c2)
-for i,ix in enumerate(xx):
-    pl.plot([ix,ix], [mdlow[i], mdhigh[i]], c='k')
-ax2s.set_xticks(np.arange(0,81,20))
-pl.xlabel('Age')
-pl.ylabel('Deaths')
-sc.boxoff(ax2s)
-pl.legend(frameon=False)
-sc.boxoff(ax1s)
-
-
-#%% Fig. 1C: infections
-x0, dx = 0.60, 0.38
-ax3 = pl.axes([x0, y0, dx, dy])
-format_ax(ax3, sim)
-
-# Plot SCAN data
-pop_size = 2.25e6
-scan = pd.read_csv(scan_file)
-for i,r in scan.iterrows():
-    label = "Data" if i==0 else None
-    ts = np.mean(sim.day(r['since'], r['to']))
-    low  = r['lower']*pop_size
-    high = r['upper']*pop_size
-    mean = r['mean']*pop_size
-    ax3.plot([ts]*2, [low, high], alpha=1.0, color='k', zorder=1000)
-    ax3.plot(ts, mean, 'o', markersize=7, color='k', alpha=0.5, label=label, zorder=1000)
-
-# Plot simulation
-plotter('cum_infections', sims, ax3, calib=True, label='Cumulative\ninfections\n(modeled)', ylabel='Infections')
-plotter('n_infectious', sims, ax3, calib=True, label='Active\ninfections\n(modeled)', ylabel='Infections', flabel=False)
-pl.legend(loc='upper left', frameon=False)
-pl.ylim([0, 130e3])
-plot_intervs(sim)
-
-
-
-#%% Fig. 1C: R_eff
-ax4 = pl.axes([x0, y0b, dx, dy])
-format_ax(ax4, sim, key='r_eff')
-plotter('r_eff', sims, ax4, calib=True, label='$R_{eff}$ (modeled)', ylabel=r'Effective reproduction number')
-pl.axhline(1, linestyle='--', lw=3, c='k', alpha=0.5)
-pl.legend(loc='upper right', frameon=False)
-plot_intervs(sim)
-
-
-
-#%% Fig. 1E
+#%% Handle Fig. 1E
 
 # Process data
 data = sc.objdict()
@@ -320,106 +178,254 @@ for k in keys:
     print(f'{k:14s}: SG={sgb:6.2f} ({sgl:6.2f}, {sgh:6.2f}) NSG={nsgb:6.2f} ({nsgl:6.2f}, {nsgh:6.2f})')
 
 
-# Do the plotting
-pl.subplots_adjust(left=0.04, right=0.52, bottom=0.03, top=0.35, wspace=0.12, hspace=0.50)
+#%% Do the actual plotting
 
-for i,k in enumerate(keys):
-    eax = pl.subplot(2,2,i+1)
+sims = cv.load(simsfile)
+base_sim = sims[0] # For having a sim to refer to
 
-    c1 = [0.2, 0.5, 0.8]
-    c2 = [1.0, 0.5, 0.0]
-    c3 = [0.1, 0.6, 0.1]
-    sns.kdeplot(df1[k], shade=1, linewidth=3, label='', color=c1, alpha=0.5)
-    sns.kdeplot(df2[k], shade=0, linewidth=3, label='', color=c2, alpha=0.5)
+def plot():
 
-    pl.title(mapping[k])
-    pl.xlabel('')
-    pl.yticks([])
-    if not i%4:
-        pl.ylabel('Density')
+    # Create the figure
+    fig = pl.figure(num='Fig. 1: Calibration', figsize=(24,20))
+    tx1, ty1 = 0.005, 0.97
+    tx2, ty2 = 0.545, 0.66
+    ty3      = 0.34
+    fsize = 40
+    pl.figtext(tx1, ty1, 'a', fontsize=fsize)
+    pl.figtext(tx1, ty2, 'b', fontsize=fsize)
+    pl.figtext(tx2, ty1, 'c', fontsize=fsize)
+    pl.figtext(tx2, ty2, 'd', fontsize=fsize)
+    pl.figtext(tx1, ty3, 'e', fontsize=fsize)
+    pl.figtext(tx2, ty3, 'f', fontsize=fsize)
 
-    yfactor = 1.3
-    yl = pl.ylim()
-    pl.ylim([yl[0], yl[1]*yfactor])
 
-    m1 = np.median(df1[k])
-    m2 = np.median(df2[k])
-    m1std = df1[k].std()
-    m2std = df2[k].std()
-    pl.axvline(m1, c=c1, ymax=0.9, lw=3, linestyle='--')
-    pl.axvline(m2, c=c2, ymax=0.9, lw=3, linestyle='--')
+    #%% Fig. 1A: diagnoses
+    x0, y0, dx, dy = 0.055, 0.73, 0.47, 0.24
+    ax1 = pl.axes([x0, y0, dx, dy])
+    format_ax(ax1, base_sim)
+    plotter('cum_diagnoses', sims, ax1, calib=True, label='Model', ylabel='Cumulative diagnoses')
+    pl.legend(loc='lower right', frameon=False)
 
-    def fmt(lab, val, std=-1):
-        if val<0.1:
-            valstr = f'{lab} = {val:0.4f}'
-        elif val<1.0:
-            valstr = f'{lab} = {val:0.2f}±{std:0.2f}'
+
+    #%% Fig. 1B: deaths
+    y0b = 0.42
+    ax2 = pl.axes([x0, y0b, dx, dy])
+    format_ax(ax2, base_sim)
+    plotter('cum_deaths', sims, ax2, calib=True, label='Model', ylabel='Cumulative deaths')
+    pl.legend(loc='lower right', frameon=False)
+
+
+    #%% Fig. 1A-B inserts (histograms)
+
+    agehists = []
+
+    for s,sim in enumerate(sims):
+        agehist = sim['analyzers'][0]
+        if s == 0:
+            age_data = agehist.data
+        agehists.append(agehist.hists[-1])
+
+    # Observed data
+    x = age_data['age'].values
+    pos = age_data['cum_diagnoses'].values
+    death = age_data['cum_deaths'].values
+
+    # Model outputs
+    mposlist = []
+    mdeathlist = []
+    for hists in agehists:
+        mposlist.append(hists['diagnosed'])
+        mdeathlist.append(hists['dead'])
+    mposarr = np.array(mposlist)
+    mdeatharr = np.array(mdeathlist)
+
+    low_q = 0.025
+    high_q = 0.975
+    mpbest = pl.median(mposarr, axis=0)
+    mplow  = pl.quantile(mposarr, q=low_q, axis=0)
+    mphigh = pl.quantile(mposarr, q=high_q, axis=0)
+    mdbest = pl.median(mdeatharr, axis=0)
+    mdlow  = pl.quantile(mdeatharr, q=low_q, axis=0)
+    mdhigh = pl.quantile(mdeatharr, q=high_q, axis=0)
+
+    w = 4
+    off = 2
+
+    # Insets
+    x0s, y0s, dxs, dys = 0.11, 0.84, 0.17, 0.13
+    ax1s = pl.axes([x0s, y0s, dxs, dys])
+    c1 = [0.3,0.3,0.6]
+    c2 = [0.6,0.7,0.9]
+    xx = x+w-off
+    pl.bar(x-off,pos, width=w, label='Data', facecolor=c1)
+    pl.bar(xx, mpbest, width=w, label='Model', facecolor=c2)
+    for i,ix in enumerate(xx):
+        pl.plot([ix,ix], [mplow[i], mphigh[i]], c='k')
+    ax1s.set_xticks(np.arange(0,81,20))
+    pl.xlabel('Age')
+    pl.ylabel('Cases')
+    sc.boxoff(ax1s)
+    pl.legend(frameon=False, bbox_to_anchor=(0.7,1.1))
+
+    y0sb = 0.53
+    ax2s = pl.axes([x0s, y0sb, dxs, dys])
+    c1 = [0.5,0.0,0.0]
+    c2 = [0.9,0.4,0.3]
+    pl.bar(x-off,death, width=w, label='Data', facecolor=c1)
+    pl.bar(x+w-off, mdbest, width=w, label='Model', facecolor=c2)
+    for i,ix in enumerate(xx):
+        pl.plot([ix,ix], [mdlow[i], mdhigh[i]], c='k')
+    ax2s.set_xticks(np.arange(0,81,20))
+    pl.xlabel('Age')
+    pl.ylabel('Deaths')
+    sc.boxoff(ax2s)
+    pl.legend(frameon=False)
+    sc.boxoff(ax1s)
+
+
+    #%% Fig. 1C: infections
+    x0, dx = 0.60, 0.38
+    ax3 = pl.axes([x0, y0, dx, dy])
+    format_ax(ax3, sim)
+
+    # Plot SCAN data
+    pop_size = 2.25e6
+    scan = pd.read_csv(scan_file)
+    for i,r in scan.iterrows():
+        label = "Data" if i==0 else None
+        ts = np.mean(sim.day(r['since'], r['to']))
+        low  = r['lower']*pop_size
+        high = r['upper']*pop_size
+        mean = r['mean']*pop_size
+        ax3.plot([ts]*2, [low, high], alpha=1.0, color='k', zorder=1000)
+        ax3.plot(ts, mean, 'o', markersize=7, color='k', alpha=0.5, label=label, zorder=1000)
+
+    # Plot simulation
+    plotter('cum_infections', sims, ax3, calib=True, label='Cumulative\ninfections\n(modeled)', ylabel='Infections')
+    plotter('n_infectious', sims, ax3, calib=True, label='Active\ninfections\n(modeled)', ylabel='Infections', flabel=False)
+    pl.legend(loc='upper left', frameon=False)
+    pl.ylim([0, 130e3])
+    plot_intervs(sim)
+
+
+
+    #%% Fig. 1C: R_eff
+    ax4 = pl.axes([x0, y0b, dx, dy])
+    format_ax(ax4, sim, key='r_eff')
+    plotter('r_eff', sims, ax4, calib=True, label='$R_{eff}$ (modeled)', ylabel=r'Effective reproduction number')
+    pl.axhline(1, linestyle='--', lw=3, c='k', alpha=0.5)
+    pl.legend(loc='upper right', frameon=False)
+    plot_intervs(sim)
+
+
+
+    #%% Fig. 1E
+
+    # Do the plotting
+    pl.subplots_adjust(left=0.04, right=0.52, bottom=0.03, top=0.35, wspace=0.12, hspace=0.50)
+
+    for i,k in enumerate(keys):
+        eax = pl.subplot(2,2,i+1)
+
+        c1 = [0.2, 0.5, 0.8]
+        c2 = [1.0, 0.5, 0.0]
+        c3 = [0.1, 0.6, 0.1]
+        sns.kdeplot(df1[k], shade=1, linewidth=3, label='', color=c1, alpha=0.5)
+        sns.kdeplot(df2[k], shade=0, linewidth=3, label='', color=c2, alpha=0.5)
+
+        pl.title(mapping[k])
+        pl.xlabel('')
+        pl.yticks([])
+        if not i%4:
+            pl.ylabel('Density')
+
+        yfactor = 1.3
+        yl = pl.ylim()
+        pl.ylim([yl[0], yl[1]*yfactor])
+
+        m1 = np.median(df1[k])
+        m2 = np.median(df2[k])
+        m1std = df1[k].std()
+        m2std = df2[k].std()
+        pl.axvline(m1, c=c1, ymax=0.9, lw=3, linestyle='--')
+        pl.axvline(m2, c=c2, ymax=0.9, lw=3, linestyle='--')
+
+        def fmt(lab, val, std=-1):
+            if val<0.1:
+                valstr = f'{lab} = {val:0.4f}'
+            elif val<1.0:
+                valstr = f'{lab} = {val:0.2f}±{std:0.2f}'
+            else:
+                valstr = f'{lab} = {val:0.1f}±{std:0.1f}'
+            if std<0:
+                valstr = valstr.split('±')[0] # Discard STD if not used
+            return valstr
+
+        if k.startswith('bc'):
+            pl.xlim([0,100])
+        elif k == 'beta':
+            pl.xlim([3,5])
+        elif k.startswith('tn'):
+            pl.xlim([0,50])
         else:
-            valstr = f'{lab} = {val:0.1f}±{std:0.1f}'
-        if std<0:
-            valstr = valstr.split('±')[0] # Discard STD if not used
-        return valstr
+            raise Exception(f'Please assign key {k}')
 
-    if k.startswith('bc'):
-        pl.xlim([0,100])
-    elif k == 'beta':
-        pl.xlim([3,5])
-    elif k.startswith('tn'):
-        pl.xlim([0,50])
-    else:
-        raise Exception(f'Please assign key {k}')
+        xl = pl.xlim()
+        xfmap = dict(
+            beta   = 0.15,
+            bc_wc1 = 0.30,
+            bc_lf  = 0.35,
+            tn     = 0.55,
+        )
 
-    xl = pl.xlim()
-    xfmap = dict(
-        beta   = 0.15,
-        bc_wc1 = 0.30,
-        bc_lf  = 0.35,
-        tn     = 0.55,
-    )
+        xf = xfmap[k]
+        x0 = xl[0] + xf*(xl[1]-xl[0])
 
-    xf = xfmap[k]
-    x0 = xl[0] + xf*(xl[1]-xl[0])
+        ypos1 = yl[1]*0.97
+        ypos2 = yl[1]*0.77
+        ypos3 = yl[1]*0.57
 
-    ypos1 = yl[1]*0.97
-    ypos2 = yl[1]*0.77
-    ypos3 = yl[1]*0.57
+        if k == 'beta': # Use 2 s.f. instead of 1
+            pl.text(x0, ypos1, f'M: {m1:0.2f} ± {m1std:0.2f}', c=c1)
+            pl.text(x0, ypos2, f'N: {m2:0.2f} ± {m2std:0.2f}', c=c2)
+            pl.text(x0, ypos3, rf'$\Delta$: {(m2-m1):0.2f} ± {(m1std+m2std):0.2f}', c=c3)
+        else:
+            pl.text(x0, ypos1, f'M: {m1:0.1f} ± {m1std:0.1f}', c=c1)
+            pl.text(x0, ypos2, f'N: {m2:0.1f} ± {m2std:0.1f}', c=c2)
+            pl.text(x0, ypos3, rf'$\Delta$: {(m2-m1):0.1f} ± {(m1std+m2std):0.1f}', c=c3)
 
-    if k == 'beta': # Use 2 s.f. instead of 1
-        pl.text(x0, ypos1, f'M: {m1:0.2f} ± {m1std:0.2f}', c=c1)
-        pl.text(x0, ypos2, f'N: {m2:0.2f} ± {m2std:0.2f}', c=c2)
-        pl.text(x0, ypos3, rf'$\Delta$: {(m2-m1):0.2f} ± {(m1std+m2std):0.2f}', c=c3)
-    else:
-        pl.text(x0, ypos1, f'M: {m1:0.1f} ± {m1std:0.1f}', c=c1)
-        pl.text(x0, ypos2, f'N: {m2:0.1f} ± {m2std:0.1f}', c=c2)
-        pl.text(x0, ypos3, rf'$\Delta$: {(m2-m1):0.1f} ± {(m1std+m2std):0.1f}', c=c3)
-
-    sc.boxoff(ax=eax)
+        sc.boxoff(ax=eax)
 
 
-#%% Fig. 1F: SafeGraph
-x0, y0c, dyc = 0.60, 0.03, 0.30
-ax5 = pl.axes([x0, y0c, dx, dyc])
-format_ax(ax5, sim, key='r_eff')
-fn = safegraph_file
-df = pd.read_csv(fn)
-week = df['week']
-days = sim.day(week.values.tolist())
-s = df['p.tot.schools'].values*100
-w = df['p.tot.no.schools'].values*100
+    #%% Fig. 1F: SafeGraph
+    x0, y0c, dyc = 0.60, 0.03, 0.30
+    ax5 = pl.axes([x0, y0c, dx, dyc])
+    format_ax(ax5, sim, key='r_eff')
+    fn = safegraph_file
+    df = pd.read_csv(fn)
+    week = df['week']
+    days = sim.day(week.values.tolist())
+    s = df['p.tot.schools'].values*100
+    w = df['p.tot.no.schools'].values*100
 
-# From Fig. 2
-colors = sc.gridcolors(5)
-wcolor = colors[3] # Work color/community
-scolor = colors[1] # School color
+    # From Fig. 2
+    colors = sc.gridcolors(5)
+    wcolor = colors[3] # Work color/community
+    scolor = colors[1] # School color
 
-pl.plot(days, w, 'd-', c=wcolor, markersize=15, lw=3, alpha=0.9, label='Workplace and\ncommunity mobility data')
-pl.plot(days, s, 'd-', c=scolor, markersize=15, lw=3, alpha=0.9, label='School mobility data')
-sc.setylim()
-xmin,xmax = ax5.get_xlim()
-ax5.set_xticks(np.arange(xmin, xmax, day_stride))
-pl.ylabel('Relative mobility (%)')
-pl.legend(loc='upper right', frameon=False)
-plot_intervs(sim)
+    pl.plot(days, w, 'd-', c=wcolor, markersize=15, lw=3, alpha=0.9, label='Workplace and\ncommunity mobility data')
+    pl.plot(days, s, 'd-', c=scolor, markersize=15, lw=3, alpha=0.9, label='School mobility data')
+    sc.setylim()
+    xmin,xmax = ax5.get_xlim()
+    ax5.set_xticks(np.arange(xmin, xmax, day_stride))
+    pl.ylabel('Relative mobility (%)')
+    pl.legend(loc='upper right', frameon=False)
+    plot_intervs(sim)
+
+    return fig
+
+# Actually plot
+fig = plot()
 
 
 #%% Tidy up
