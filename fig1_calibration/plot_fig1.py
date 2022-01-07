@@ -175,7 +175,7 @@ for k in keys:
     nsgb = np.median(df2[k])
     nsgl = np.quantile(df2[k], q1)
     nsgh = np.quantile(df2[k], q2)
-    print(f'{k:14s}: SG={sgb:6.2f} ({sgl:6.2f}, {sgh:6.2f}) NSG={nsgb:6.2f} ({nsgl:6.2f}, {nsgh:6.2f})')
+    print(f'{k:8s}: SG={sgb:5.2f} ({sgl:5.2f}, {sgh:5.2f}) NSG={nsgb:5.2f} ({nsgl:5.2f}, {nsgh:5.2f})')
 
 
 #%% Do the actual plotting
