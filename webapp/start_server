@@ -1,6 +1,6 @@
 #!/bin/bash
 # Can supply additional arguments, e.g. ./start_server --debug
-voila Covid-TTQ4.ipynb \
+voila Covid-TTQ.ipynb \
     --no-browser \
     --show_tracebacks=True \
     --MappingKernelManager.cull_interval=120 \
