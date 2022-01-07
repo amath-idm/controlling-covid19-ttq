@@ -32,33 +32,7 @@ msims = cv.load(msimsfile)
 refsim = msims[0].sims[0] # A reference simulation, any will do
 
 
-#%% Plotting
-print('Creating figure...')
-
-fig = pl.figure(num='Fig. 5: Projections and validation', figsize=(22, 14))
-x1 = 0.07 # Panel and text locations
-x2 = 0.48
-y1 = 0.05
-y2 = 0.55
-dx1 = 0.32
-dx2 = 0.51
-dy = 0.40
-ax1 = fig.add_axes([x1, y2, dx1, dy])
-ax2 = fig.add_axes([x1, y1, dx1, dy])
-ax3 = fig.add_axes([x2, y2, dx2, dy])
-ax4 = fig.add_axes([x2, y1, dx2, dy])
-axs = [ax1, ax2, ax3, ax4]
-
-fsize = 40
-tx1 = -0.06
-tx2 = -0.04
-ty1 = 0.40
-ty2 = 0.41
-pl.figtext(x1+tx1, y2+ty2, 'a', fontsize=fsize)
-pl.figtext(x1+tx1, y1+ty1, 'b', fontsize=fsize)
-pl.figtext(x2+tx2, y2+ty2, 'c', fontsize=fsize)
-pl.figtext(x2+tx2, y1+ty1, 'd', fontsize=fsize)
-
+#%% Plot setup
 scargs = dict(color='k', marker='d', linestyle='none', alpha=0.5, markersize=10, lw=3)
 plargs = dict(lw=4)
 fillargs = dict(alpha=0.2)
@@ -145,29 +119,66 @@ def plot_intervs(ax):
     return
 
 
-# Panel 1
-dataplotter(ax1, sub(tsdf['date']), sub(roll(tsdf['new_tests'])))
-simplotter(ax1, 'new_tests', label='Tests conducted per day')
-ax1.set_xlim(xlims1)
+#%% Plotting
+def plot():
+    print('Creating figure...')
 
-# Panel 2
-dataplotter(ax2, ctdf['date'], ctdf['estimated_daily'])
-simplotter(ax2, 'new_quarantined', label='Contacts traced per day')
-ax2.set_xlim(xlims1)
+    fig = pl.figure(num='Fig. 5: Projections and validation', figsize=(22, 14))
 
-# Panel 3
-simplotter(ax3, 'new_infections', label='New infections per day')
-plot_intervs(ax3)
-ax3.set_xlim(xlims2) # Starts later because of rolling window
+    x1 = 0.07 # Panel and text locations
+    x2 = 0.48
+    y1 = 0.05
+    y2 = 0.55
+    dx1 = 0.32
+    dx2 = 0.51
+    dy = 0.40
+    ax1 = fig.add_axes([x1, y2, dx1, dy])
+    ax2 = fig.add_axes([x1, y1, dx1, dy])
+    ax3 = fig.add_axes([x2, y2, dx2, dy])
+    ax4 = fig.add_axes([x2, y1, dx2, dy])
+    axs = [ax1, ax2, ax3, ax4]
 
-# Panel 4
-dataplotter(ax4, sub(tsdf['date']), sub(roll(tsdf['new_diagnoses'])))
-simplotter(ax4, 'new_diagnoses', label='New diagnoses per day')
-plot_intervs(ax4)
-ax4.set_xlim(xlims2)
+    fsize = 40
+    tx1 = -0.06
+    tx2 = -0.04
+    ty1 = 0.40
+    ty2 = 0.41
+    pl.figtext(x1+tx1, y2+ty2, 'a', fontsize=fsize)
+    pl.figtext(x1+tx1, y1+ty1, 'b', fontsize=fsize)
+    pl.figtext(x2+tx2, y2+ty2, 'c', fontsize=fsize)
+    pl.figtext(x2+tx2, y1+ty1, 'd', fontsize=fsize)
 
-# Tidy up
-format_axs(axs)
+    # Panel 1
+    dataplotter(ax1, sub(tsdf['date']), sub(roll(tsdf['new_tests'])))
+    simplotter(ax1, 'new_tests', label='Tests conducted per day')
+    ax1.set_xlim(xlims1)
+
+    # Panel 2
+    dataplotter(ax2, ctdf['date'], ctdf['estimated_daily'])
+    simplotter(ax2, 'new_quarantined', label='Contacts traced per day')
+    ax2.set_xlim(xlims1)
+
+    # Panel 3
+    simplotter(ax3, 'new_infections', label='New infections per day')
+    plot_intervs(ax3)
+    ax3.set_xlim(xlims2) # Starts later because of rolling window
+
+    # Panel 4
+    dataplotter(ax4, sub(tsdf['date']), sub(roll(tsdf['new_diagnoses'])))
+    simplotter(ax4, 'new_diagnoses', label='New diagnoses per day')
+    plot_intervs(ax4)
+    ax4.set_xlim(xlims2)
+
+    # Tidy up
+    format_axs(axs)
+
+    return fig
+
+# Actually plot
+fig = plot()
+
+
+#%% Tidy up
 
 if do_save:
     cv.savefig(fig_path, dpi=150)

@@ -24,36 +24,8 @@ dffile2 = 'reopening_sweeps_sep28_final.df'
 T = sc.tic()
 
 # Figure configuration
-print('Creating figure...')
 figw, figh = 24, 20
 pl.rcParams['font.size'] = 20 # Set general figure options
-fig = pl.figure(num='Fig. 4: Suppression scenarios', figsize=(figw, figh))
-
-rx   = 0.07
-r1y  = 0.74
-rdx  = 0.26
-r1dy = 0.20
-rδ   = 0.30
-r1δy = 0.29
-r1ax = {}
-for i in range(6):
-    xi = i%3
-    yi = i//3
-    r1ax[i] = pl.axes([rx+rδ*xi, r1y-r1δy*yi, rdx, r1dy])
-
-r2y = 0.05
-r2dy = rdx*figw/figh # To ensure square
-r2ax = {}
-for i in range(3):
-    r2ax[i] = pl.axes([rx+rδ*i, r2y, rdx, r2dy])
-
-cax = pl.axes([0.96, r2y, 0.01, r2dy])
-
-# Labels
-lx = 0.015
-yoff = 0.03
-pl.figtext(lx, r1y+r1dy+0.02, 'a', fontsize=40)
-pl.figtext(lx, r2y+r2dy+0.02, 'b', fontsize=40)
 
 
 #%% Top row: scatter plots
@@ -158,8 +130,6 @@ pointcolor = [0.1, 0.4, 0.0] # High mobility, high intervention
 pointcolor2 = 'k' # Status quo, darker
 c1 = [0.4, 0.4, 0.4]
 c2 = [0.2, 0.2, 0.2]
-scattercols = sc.gridcolors(10, asarray=True)
-
 
 # Plot each seed (eind) separately
 sepinds = 0
@@ -170,123 +140,6 @@ if sepinds:
 if not sepinds:
     eis = [0]
     cols = [c1]
-
-
-slopes = sc.objdict().make(keys=df1map.keys(), vals=[])
-slopes2 = sc.objdict().make(keys=df1map.keys(), vals=[])
-for plotnum,key,label in df1map.enumitems():
-    cv.set_seed(plotnum)
-    ax = r1ax[plotnum]
-    for ei in eis:
-        theseinds = sc.findinds(~np.isnan(df1[key].values))
-        if sepinds:
-            ei_ok = sc.findinds(df1['eind'].values == ei)
-            theseinds = np.intersect1d(theseinds, ei_ok)
-        x = xvals[key][theseinds]
-        rawy = df1[ykey].values[theseinds]
-        y = rawy/kcpop*100 if logy else rawy
-        xm = x.max()
-        if key in ['testdelay', 'trtime']:
-            xnoise = 0.01
-            ynoise = 0.05
-        else:
-            xnoise = 0
-            ynoise = 0
-        rndx = (np.random.randn(len(x)))*xm*xnoise
-        rndy = (np.random.randn(len(y)))*ynoise
-        ax.scatter(x+rndx, y*(1+rndy), alpha=0.2, c=[cols[ei]], edgecolor='w')
-
-        # Calculate slopes
-        slopey = np.log(rawy) if logy else rawy
-        slopex = xvals[key].values[theseinds]
-        tmp, res = np.polyfit(slopex, slopey, 1, cov=True)
-        fitm, fitb = tmp
-        factor = np.exp(fitm*slopepoint[key]+fitb) / slopedenom[key] * slopex.max()
-        slope = fitm * factor
-        std = res[0,0]**0.5 * factor
-        slopes[key].append(slope)
-
-        # Calculate slopes, method 2 -- used for std calculation
-        X = sm.add_constant(slopex)
-        mod = sm.OLS(slopey, X)
-        res = mod.fit()
-        conf = res.conf_int(alpha=0.05, cols=None)
-        best = res.params[1]*factor
-        low = conf[1,0]*factor
-        high = conf[1,1]*factor
-        slopes2[key].append(res)
-
-        # Plot fit line
-        bflx = np.array([x.min(), x.max()])
-        ploty = np.log10(y) if logy else y
-        plotm, plotb = np.polyfit(x, ploty, 1)
-        bfly = plotm*bflx + plotb
-        if logy:
-            ax.semilogy(bflx, 10**(bfly), lw=3, c=c2)
-        else:
-            ax.plot(bflx, bfly, lw=3, c=c2)
-
-    plot_baseinds = False
-    if plot_baseinds:
-        default_x = default_xvals[key][baseinds]
-        default_rawy = df1[ykey].values[baseinds]
-        default_y = default_rawy/kcpop*100 if logy else default_rawy
-        ax.scatter(default_x, default_y, marker='x', alpha=1.0, c=[cols[i]])
-    print(f'{key:10s}: {np.mean(slopes[key]):0.3f} ± {high-best:0.3f}')
-
-    sc.boxoff(ax=ax)
-    ax.yaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
-    if plotnum in [0, 3]:
-        if logy:
-            ax.set_ylabel('Attack rate (%)')
-            ax.set_yticks((0.01, 0.1, 1.0, 10, 100))
-            ax.set_yticklabels(('0.01', '0.1', '1.0', '10', '100'))
-        else:
-            ax.set_ylabel(r'$R_{e}$')
-    ax.set_xlabel(xlabelmap[key])
-
-    if key in ['iqfactor']:
-        ax.set_xticks(np.linspace(0,100,6))
-    elif key in ['trprob']:
-        ax.set_xticks(np.linspace(0,10,6))
-    elif key in ['testprob']:
-        ax.set_xticks(np.arange(7))
-    elif key in ['testqprob']:
-        ax.set_xticks(np.arange(7))
-    else:
-        ax.set_xticks(np.arange(8))
-
-    if logy:
-        ax.set_ylim([0.1,100])
-    else:
-        ax.set_ylim([0.7,1.7])
-
-    xl = ax.get_xlim()
-    if logy:
-        ypos1 = 150
-        ypos2 = 40
-    else:
-        ypos1 = 1.9
-        ypos2 = 1.7
-
-    xlpos = dict(
-        iqfactor  = 0.86,
-        testprob  = 0.13,
-        trprob    = 0.83,
-        testqprob = 0.86,
-        testdelay = 0.13,
-        trtime    = 0.00,
-    )
-
-    if key in ['iqfactor', 'testqprob', 'trprob']:
-        align = 'right'
-    else:
-        align = 'left'
-
-    ax.text((xl[0]+xl[1])/2, ypos1, label, fontsize=26, horizontalalignment='center')
-    ax.text(xlpos[key]*xl[1], ypos2, f'{abs(best):0.2f} ± {high-best:0.2f} {slopelabels[key]}', color=pointcolor, horizontalalignment=align)
-    ax.axvline(slopepoint[key], ymax=0.83, linestyle='--', c=pointcolor, alpha=0.5, lw=2)
-
 
 
 #%% Bottom row: surface plots
@@ -301,7 +154,6 @@ newcolors = np.vstack((top(np.linspace(0, 1, 128)),
 newcmp = mpl.colors.ListedColormap(newcolors, name='OrangeBlue')
 
 colormap = newcmp
-colormap_label = 'OrangeBlue'
 
 
 def gauss2d(x, y, z, xi, yi, eps=1.0, xscale=1.0, yscale=1.0):
@@ -378,33 +230,183 @@ def plot_surface(ax, dfr, col=0, colval=0):
     return im
 
 
-reop = [0.6, 0.8, 1.0]
+#%% Actually plot
 
-for ri, r in enumerate(reop):
-    dfr = df2[df2['reopen'] == r]
-    im = plot_surface(r2ax[ri], dfr, col=ri, colval=r)
+def plot():
+    print('Creating figure...')
+    fig = pl.figure(num='Fig. 4: Suppression scenarios', figsize=(figw, figh))
 
-    bbox = dict(facecolor='w', alpha=0.0, edgecolor='none')
+    rx   = 0.07
+    r1y  = 0.74
+    rdx  = 0.26
+    r1dy = 0.20
+    rδ   = 0.30
+    r1δy = 0.29
+    r1ax = {}
+    for i in range(6):
+        xi = i%3
+        yi = i//3
+        r1ax[i] = pl.axes([rx+rδ*xi, r1y-r1δy*yi, rdx, r1dy])
 
-    pointsize = 150
-    if ri == 0:
-        dotx = 1900*1000/kcpop
-        doty = 0.06
-        r2ax[ri].scatter([dotx], [doty], c='k', s=pointsize, zorder=10, marker='d')
-        r2ax[ri].text(dotx*1.20, doty*1.50, 'Estimated\nconditions\non June 1', bbox=bbox)
-    if ri == 1:
-        dotx = 3000*1000/kcpop
-        doty = 0.20
-        r2ax[ri].scatter([dotx], [doty], c=[pointcolor2], s=pointsize, zorder=10, marker='d')
-        r2ax[ri].text(dotx*1.10, doty*0.20, 'Estimated\nconditions\non July 15', color=pointcolor2, bbox=bbox)
-    if ri == 2:
-        dotx = 2.80# 7200*1000/kcpop
-        doty = 0.70# 0.66
-        r2ax[ri].scatter([dotx], [doty], c=[pointcolor], s=pointsize, zorder=10, marker='d')
-        r2ax[ri].text(dotx*1.05, doty*1.05, 'High mobility,\nhigh test + trace\nscenario', color=pointcolor, bbox=bbox)
+    r2y = 0.05
+    r2dy = rdx*figw/figh # To ensure square
+    r2ax = {}
+    for i in range(3):
+        r2ax[i] = pl.axes([rx+rδ*i, r2y, rdx, r2dy])
 
-cbar = pl.colorbar(im, ticks=np.linspace(0.4, 1.6, 7), cax=cax)
-cbar.ax.set_title('$R_{e}$', rotation=0, pad=20, fontsize=24)
+    cax = pl.axes([0.96, r2y, 0.01, r2dy])
+
+    # Labels
+    lx = 0.015
+    pl.figtext(lx, r1y+r1dy+0.02, 'a', fontsize=40)
+    pl.figtext(lx, r2y+r2dy+0.02, 'b', fontsize=40)
+
+    slopes = sc.objdict().make(keys=df1map.keys(), vals=[])
+    slopes2 = sc.objdict().make(keys=df1map.keys(), vals=[])
+    for plotnum,key,label in df1map.enumitems():
+        cv.set_seed(plotnum)
+        ax = r1ax[plotnum]
+        for ei in eis:
+            theseinds = sc.findinds(~np.isnan(df1[key].values))
+            if sepinds:
+                ei_ok = sc.findinds(df1['eind'].values == ei)
+                theseinds = np.intersect1d(theseinds, ei_ok)
+            x = xvals[key][theseinds]
+            rawy = df1[ykey].values[theseinds]
+            y = rawy/kcpop*100 if logy else rawy
+            xm = x.max()
+            if key in ['testdelay', 'trtime']:
+                xnoise = 0.01
+                ynoise = 0.05
+            else:
+                xnoise = 0
+                ynoise = 0
+            rndx = (np.random.randn(len(x)))*xm*xnoise
+            rndy = (np.random.randn(len(y)))*ynoise
+            ax.scatter(x+rndx, y*(1+rndy), alpha=0.2, c=[cols[ei]], edgecolor='w')
+
+            # Calculate slopes
+            slopey = np.log(rawy) if logy else rawy
+            slopex = xvals[key].values[theseinds]
+            tmp, res = np.polyfit(slopex, slopey, 1, cov=True)
+            fitm, fitb = tmp
+            factor = np.exp(fitm*slopepoint[key]+fitb) / slopedenom[key] * slopex.max()
+            slope = fitm * factor
+            slopes[key].append(slope)
+
+            # Calculate slopes, method 2 -- used for std calculation
+            X = sm.add_constant(slopex)
+            mod = sm.OLS(slopey, X)
+            res = mod.fit()
+            conf = res.conf_int(alpha=0.05, cols=None)
+            best = res.params[1]*factor
+            high = conf[1,1]*factor
+            slopes2[key].append(res)
+
+            # Plot fit line
+            bflx = np.array([x.min(), x.max()])
+            ploty = np.log10(y) if logy else y
+            plotm, plotb = np.polyfit(x, ploty, 1)
+            bfly = plotm*bflx + plotb
+            if logy:
+                ax.semilogy(bflx, 10**(bfly), lw=3, c=c2)
+            else:
+                ax.plot(bflx, bfly, lw=3, c=c2)
+
+        plot_baseinds = False
+        if plot_baseinds:
+            default_x = default_xvals[key][baseinds]
+            default_rawy = df1[ykey].values[baseinds]
+            default_y = default_rawy/kcpop*100 if logy else default_rawy
+            ax.scatter(default_x, default_y, marker='x', alpha=1.0, c=[cols[i]])
+        print(f'{key:10s}: {np.mean(slopes[key]):0.3f} ± {high-best:0.3f}')
+
+        sc.boxoff(ax=ax)
+        ax.yaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
+        if plotnum in [0, 3]:
+            if logy:
+                ax.set_ylabel('Attack rate (%)')
+                ax.set_yticks((0.01, 0.1, 1.0, 10, 100))
+                ax.set_yticklabels(('0.01', '0.1', '1.0', '10', '100'))
+            else:
+                ax.set_ylabel(r'$R_{e}$')
+        ax.set_xlabel(xlabelmap[key])
+
+        if key in ['iqfactor']:
+            ax.set_xticks(np.linspace(0,100,6))
+        elif key in ['trprob']:
+            ax.set_xticks(np.linspace(0,10,6))
+        elif key in ['testprob']:
+            ax.set_xticks(np.arange(7))
+        elif key in ['testqprob']:
+            ax.set_xticks(np.arange(7))
+        else:
+            ax.set_xticks(np.arange(8))
+
+        if logy:
+            ax.set_ylim([0.1,100])
+        else:
+            ax.set_ylim([0.7,1.7])
+
+        xl = ax.get_xlim()
+        if logy:
+            ypos1 = 150
+            ypos2 = 40
+        else:
+            ypos1 = 1.9
+            ypos2 = 1.7
+
+        xlpos = dict(
+            iqfactor  = 0.86,
+            testprob  = 0.13,
+            trprob    = 0.83,
+            testqprob = 0.86,
+            testdelay = 0.13,
+            trtime    = 0.00,
+        )
+
+        if key in ['iqfactor', 'testqprob', 'trprob']:
+            align = 'right'
+        else:
+            align = 'left'
+
+        ax.text((xl[0]+xl[1])/2, ypos1, label, fontsize=26, horizontalalignment='center')
+        ax.text(xlpos[key]*xl[1], ypos2, f'{abs(best):0.2f} ± {high-best:0.2f} {slopelabels[key]}', color=pointcolor, horizontalalignment=align)
+        ax.axvline(slopepoint[key], ymax=0.83, linestyle='--', c=pointcolor, alpha=0.5, lw=2)
+
+    reop = [0.6, 0.8, 1.0]
+
+    for ri, r in enumerate(reop):
+        dfr = df2[df2['reopen'] == r]
+        im = plot_surface(r2ax[ri], dfr, col=ri, colval=r)
+
+        bbox = dict(facecolor='w', alpha=0.0, edgecolor='none')
+
+        pointsize = 150
+        if ri == 0:
+            dotx = 1900*1000/kcpop
+            doty = 0.06
+            r2ax[ri].scatter([dotx], [doty], c='k', s=pointsize, zorder=10, marker='d')
+            r2ax[ri].text(dotx*1.20, doty*1.50, 'Estimated\nconditions\non June 1', bbox=bbox)
+        if ri == 1:
+            dotx = 3000*1000/kcpop
+            doty = 0.20
+            r2ax[ri].scatter([dotx], [doty], c=[pointcolor2], s=pointsize, zorder=10, marker='d')
+            r2ax[ri].text(dotx*1.10, doty*0.20, 'Estimated\nconditions\non July 15', color=pointcolor2, bbox=bbox)
+        if ri == 2:
+            dotx = 2.80# 7200*1000/kcpop
+            doty = 0.70# 0.66
+            r2ax[ri].scatter([dotx], [doty], c=[pointcolor], s=pointsize, zorder=10, marker='d')
+            r2ax[ri].text(dotx*1.05, doty*1.05, 'High mobility,\nhigh test + trace\nscenario', color=pointcolor, bbox=bbox)
+
+    cbar = pl.colorbar(im, ticks=np.linspace(0.4, 1.6, 7), cax=cax)
+    cbar.ax.set_title('$R_{e}$', rotation=0, pad=20, fontsize=24)
+
+    return fig
+
+
+# Actually plot
+fig = plot()
 
 
 #%% Tidy up
