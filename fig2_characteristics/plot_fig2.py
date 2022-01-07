@@ -30,7 +30,6 @@ tt = sim.results.transtree
 
 # Make the plots
 def plot():
-    print('Creating figure...')
     fig = pl.figure(num='Fig. 2: Transmission dynamics', figsize=(20,14))
     piey, tsy, r3y = 0.68, 0.50, 0.07
     piedx, tsdx, r3dx = 0.2, 0.9, 0.25

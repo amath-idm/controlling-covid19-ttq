@@ -124,6 +124,59 @@ def plot_intervs(sim, labels=True):
     return
 
 
+#%% Handle Fig. 1E
+
+# Process data
+data = sc.objdict()
+dfs = sc.objdict()
+for k,fn in datafiles.items():
+    data[k] = sc.loadjson(datafiles[k])
+    flat_data = []
+    for entry in data[k]:
+        flat = {}
+        for k2 in ['index', 'mismatch']:
+            flat[k2] = entry[k2]
+        for k3,val3 in entry['pars'].items():
+            flat[k3] = val3
+            if k3 == 'beta':
+                flat[k3] *= 100*3 # Household transmission probability and percentage
+            elif k3.startswith('bc'):
+                flat[k3] = 100*(1-flat[k3]) # To percentage, convert relative beta to beta reductions
+        flat_data.append(flat)
+    dfs[k] = pd.DataFrame(flat_data)
+
+
+# Convert to dataframes
+bestdfs = sc.objdict()
+for k,df in dfs.items():
+    df = df.loc[df['mismatch']<mismatch_cutoff,:]
+    bestdfs[k] = df.drop(columns=['index', 'mismatch'])
+    print('Samples remaining: ', len(df))
+df1 = bestdfs[0]
+df2 = bestdfs[1]
+keys = list(bestdfs[0].columns)
+
+
+# Define mapping to labels
+mapping = sc.objdict({
+    'beta'  : r'Overall $\beta$ (%)',
+    'bc_wc1': r'Work/community $\beta$ reduction (%)',
+    'bc_lf' : r'LTCF $\beta$ reduction (%)',
+    'tn'   : 'Symptomatic testing OR',
+    })
+keys = mapping.keys()
+
+for k in keys:
+    q1 = 0.025
+    q2 = 0.975
+    sgb = np.median(df1[k])
+    sgl = np.quantile(df1[k], q1)
+    sgh = np.quantile(df1[k], q2)
+    nsgb = np.median(df2[k])
+    nsgl = np.quantile(df2[k], q1)
+    nsgh = np.quantile(df2[k], q2)
+    print(f'{k:14s}: SG={sgb:6.2f} ({sgl:6.2f}, {sgh:6.2f}) NSG={nsgb:6.2f} ({nsgl:6.2f}, {nsgh:6.2f})')
+
 
 #%% Do the actual plotting
 
@@ -133,7 +186,6 @@ base_sim = sims[0] # For having a sim to refer to
 def plot():
 
     # Create the figure
-    print('Creating figure...')
     fig = pl.figure(num='Fig. 1: Calibration', figsize=(24,20))
     tx1, ty1 = 0.005, 0.97
     tx2, ty2 = 0.545, 0.66
@@ -268,58 +320,6 @@ def plot():
 
 
     #%% Fig. 1E
-
-    # Process data
-    data = sc.objdict()
-    dfs = sc.objdict()
-    for k,fn in datafiles.items():
-        data[k] = sc.loadjson(datafiles[k])
-        flat_data = []
-        for entry in data[k]:
-            flat = {}
-            for k2 in ['index', 'mismatch']:
-                flat[k2] = entry[k2]
-            for k3,val3 in entry['pars'].items():
-                flat[k3] = val3
-                if k3 == 'beta':
-                    flat[k3] *= 100*3 # Household transmission probability and percentage
-                elif k3.startswith('bc'):
-                    flat[k3] = 100*(1-flat[k3]) # To percentage, convert relative beta to beta reductions
-            flat_data.append(flat)
-        dfs[k] = pd.DataFrame(flat_data)
-
-
-    # Convert to dataframes
-    bestdfs = sc.objdict()
-    for k,df in dfs.items():
-        df = df.loc[df['mismatch']<mismatch_cutoff,:]
-        bestdfs[k] = df.drop(columns=['index', 'mismatch'])
-        print('Samples remaining: ', len(df))
-    df1 = bestdfs[0]
-    df2 = bestdfs[1]
-    keys = list(bestdfs[0].columns)
-
-
-    # Define mapping to labels
-    mapping = sc.objdict({
-        'beta'  : r'Overall $\beta$ (%)',
-        'bc_wc1': r'Work/community $\beta$ reduction (%)',
-        'bc_lf' : r'LTCF $\beta$ reduction (%)',
-        'tn'   : 'Symptomatic testing OR',
-        })
-    keys = mapping.keys()
-
-    for k in keys:
-        q1 = 0.025
-        q2 = 0.975
-        sgb = np.median(df1[k])
-        sgl = np.quantile(df1[k], q1)
-        sgh = np.quantile(df1[k], q2)
-        nsgb = np.median(df2[k])
-        nsgl = np.quantile(df2[k], q1)
-        nsgh = np.quantile(df2[k], q2)
-        print(f'{k:14s}: SG={sgb:6.2f} ({sgl:6.2f}, {sgh:6.2f}) NSG={nsgb:6.2f} ({nsgl:6.2f}, {nsgh:6.2f})')
-
 
     # Do the plotting
     pl.subplots_adjust(left=0.04, right=0.52, bottom=0.03, top=0.35, wspace=0.12, hspace=0.50)

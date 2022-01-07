@@ -12,6 +12,7 @@ import covasim as cv
 # General options
 do_save = 0
 do_show = 1
+verbose = 0
 fig_path = 'ttq_fig3_sep25.png'
 tt_filename = 'fig3_transtrees.obj'
 pl.rcParams['font.size'] = 20 # Set general figure options
@@ -37,7 +38,6 @@ p,s,t = cv.load(tt_filename) # Load saved data
 a = sc.objdict()
 
 def plot():
-    print('Creating figure...')
     fig = pl.figure(num='Fig. 3: Theoretical TTQ', figsize=(24,14))
 
     euclid = False
@@ -57,7 +57,7 @@ def plot():
 
     max_n = 0; ζ = {'↓':-2, '↑':10} # Configure plot zorder
 
-    print('Processing trees...')
+    # Processing trees
     for k in ['none', 'test', 'trace']:
         tt = t[k]
         max_n = max(max_n, len(tt.infection_log))
@@ -121,7 +121,6 @@ def plot():
 
         # Plot
         pl.sca(a[k])
-        print('Working on', k)
         for frame in frames:
             for entry in frame:
                 x0 = entry['x'][0]
@@ -143,7 +142,7 @@ def plot():
             qdy = 0.2
             α = 0.9
             mark = ['>', 'x'][1]
-            if not np.isnan(dq) and not np.isnan(de) and np.isnan(dd):
+            if not np.isnan(dq) and not np.isnan(de) and np.isnan(dd) and verbose:
                 print(f'Person {i} is infected and quarantined but not diagnosed, due to presymptomatic period')
             if not np.isnan(dq):
                 pl.plot([de, dq], [ii, ii], c=quar_color2, linestyle='--', zorder=ζ['↓']-4)

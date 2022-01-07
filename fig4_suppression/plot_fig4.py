@@ -17,6 +17,7 @@ import run_scenarios as rs
 # Basic setup
 do_save = 0
 do_show = 1
+verbose = 0
 fig_path = 'ttq_fig4.png'
 dffile1 = 'sensitivity_scenarios_sep28_final.df'
 dffile2 = 'reopening_sweeps_sep28_final.df'
@@ -225,7 +226,8 @@ def plot_surface(ax, dfr, col=0, colval=0):
 
     ax.set_xlim([min_x, max_x])
     ax.set_ylim([min_y, max_y])
-    print(f'Plot: {col}, min zz: {zz.min():0.2f}; max zz: {zz.max():0.2f}; min z: {z.min():0.2f}; max z: {z.max():0.2f};')
+    if verbose:
+        print(f'Plot: {col}, min zz: {zz.min():0.2f}; max zz: {zz.max():0.2f}; min z: {z.min():0.2f}; max z: {z.max():0.2f}')
 
     return im
 
@@ -233,7 +235,6 @@ def plot_surface(ax, dfr, col=0, colval=0):
 #%% Actually plot
 
 def plot():
-    print('Creating figure...')
     fig = pl.figure(num='Fig. 4: Suppression scenarios', figsize=(figw, figh))
 
     rx   = 0.07
@@ -319,7 +320,8 @@ def plot():
             default_rawy = df1[ykey].values[baseinds]
             default_y = default_rawy/kcpop*100 if logy else default_rawy
             ax.scatter(default_x, default_y, marker='x', alpha=1.0, c=[cols[i]])
-        print(f'{key:10s}: {np.mean(slopes[key]):0.3f} ± {high-best:0.3f}')
+        if verbose:
+            print(f'Slope for {key:10s}: {np.mean(slopes[key]):0.3f} ± {high-best:0.3f}')
 
         sc.boxoff(ax=ax)
         ax.yaxis.set_major_formatter(mpl.ticker.ScalarFormatter())

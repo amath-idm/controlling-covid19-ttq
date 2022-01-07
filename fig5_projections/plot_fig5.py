@@ -23,8 +23,8 @@ print('Loading data...')
 msimsfile = 'fig5.msims'
 tsfn = './kc_data/20200614chop5_KingCounty_Covasim_extended.xlsx' # Time series data
 ctfn = './kc_data/contact_tracing.xlsx' # Contact tracing
-tsdf = pd.read_excel(tsfn)
-ctdf = pd.read_excel(ctfn, sheet_name='final')
+tsdf = pd.read_excel(tsfn, engine='openpyxl')
+ctdf = pd.read_excel(ctfn, sheet_name='final', engine='openpyxl')
 ctdf['date'] = pd.to_datetime(ctdf['date']).dt.date
 tsdf['date'] = pd.to_datetime(tsdf['date']).dt.date
 
@@ -121,8 +121,6 @@ def plot_intervs(ax):
 
 #%% Plotting
 def plot():
-    print('Creating figure...')
-
     fig = pl.figure(num='Fig. 5: Projections and validation', figsize=(22, 14))
 
     x1 = 0.07 # Panel and text locations

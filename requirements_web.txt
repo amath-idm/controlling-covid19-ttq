@@ -66,6 +66,7 @@ numba==0.53.1
 numpy==1.20.2
 oauthlib==3.1.0
 openpyexcel==2.5.14
+openpyxl==3.0.6
 packaging==20.9
 pamela==1.0.0
 pandas==1.2.3
