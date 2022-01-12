@@ -56,7 +56,7 @@ def plotter(key, sims, ax, ys=None, calib=False, label='', ylabel='', low_q=0.02
 
     which = key.split('_')[1]
     try:
-        color = cv.get_default_colors()[which]
+        color = cv.get_colors()[which]
     except:
         color = [0.5,0.5,0.5]
     if which == 'deaths':
