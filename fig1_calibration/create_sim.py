@@ -247,7 +247,7 @@ if __name__ == '__main__':
 
     T = sc.tic()
 
-    use_multisim  = 1
+    use_multisim  = 0
     use_safegraph = 1
 
     # Settings

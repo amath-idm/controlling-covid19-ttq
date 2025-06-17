@@ -1,0 +1,12 @@
+[Unit]
+Description=Covid-TTQ
+
+[Service]
+Type=simple
+ExecStart=/home/cliffk/controlling-covid19-ttq/webapp/start_server
+WorkingDirectory=/home/cliffk/controlling-covid19-ttq/webapp
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

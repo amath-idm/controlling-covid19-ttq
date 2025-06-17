@@ -1,0 +1,16 @@
+#!/bin/bash
+# Restart Voila server since it frequently crashes
+# Written largely by ChatGPT
+
+retry=1
+SECONDS=0  # initialize the timer
+
+while true; do
+  echo "Restarting for the $retry time..."
+  ./start_server
+  duration=$SECONDS
+  hours=$(bc <<< "scale=2; $duration / 3600")
+  echo "Last run lasted $hours hours"
+  SECONDS=0  # reset the timer
+  ((retry++))
+done
